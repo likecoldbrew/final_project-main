@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.nextit.backend.mapper.UserMapper">
+    <!--  모든 유저 조회  -->
+    <select id="getAllUsers" resultType="kr.or.nextit.backend.model.User"> SELECT *
+                                                                           FROM users
+                                                                           ORDER BY status DESC, user_no </select>
+    <!--  환자 목록 조회  -->
+    <select id="getPatientList" resultType="kr.or.nextit.backend.model.User"> SELECT *
+                                                                              FROM users
+                                                                              WHERE admin = 0
+                                                                              ORDER BY status DESC, user_no </select>
+    <!--  의사 목록 조회  -->
+    <select id="getDoctorList" resultType="kr.or.nextit.backend.model.User"> SELECT u.*, d.rank, md.department_name
+                                                                             FROM doctors d
+                                                                                      INNER JOIN users u ON u.user_no = d.doctor_no
+                                                                                      INNER JOIN medical_department md ON d.department = md.department_no AND u.admin = 1
+                                                                             ORDER BY status DESC, user_no </select>
+    <!--  의사 디테일   -->
+    <select id="getDoctorDetail" resultType="kr.or.nextit.backend.model.User">
+        SELECT u.*, d.rank, md.department_name
+        FROM doctors d
+                 INNER JOIN users u
+                            ON u.user_no = d.doctor_no
+                 INNER JOIN medical_department md
+                            ON d.department = md.department_no
+                                AND u.admin = 1
+                                AND d.doctor_no = #{doctorNo}
+    </select>
+    <!--  관리자 목록 조회  -->
+    <select id="getAdminList" resultType="kr.or.nextit.backend.model.User"> SELECT *
+                                                                            FROM users
+                                                                            WHERE admin = 2
+                                                                            ORDER BY status DESC, user_no </select>
+    <!--  특정 유저 user_no 으로 조회  -->
+    <select id="getUserByNo" parameterType="int" resultType="kr.or.nextit.backend.model.User"> SELECT *
+                                                                                               FROM users
+                                                                                               WHERE user_no = #{userNo} </select>
+    <!--  특정 유저 user_id 으로 조회 (로그인 시 필요)  -->
+    <select id="getUserById" parameterType="String" resultType="kr.or.nextit.backend.model.User">SELECT u.*
+                                                                                                 FROM users u
+                                                                                                 WHERE user_id = #{userId}
+                                                                                                   and status = 'N'</select>
+    <!--  의사 이름 조회  -->
+    <select id="getDoctorsName" resultType="kr.or.nextit.backend.model.User"> SELECT user_name
+                                                                              FROM users
+                                                                              WHERE admin = 1 </select>
+    <!--  유저 추가  -->
+    <insert id="insertUser" parameterType="kr.or.nextit.backend.model.User"> INSERT INTO users (user_id, user_pass,
+                                                                                                user_name, user_rrn,
+                                                                                                email, phone, user_add,
+                                                                                                user_add2)
+                                                                             VALUES (#{userId}, #{userPass},
+                                                                                     #{userName}, #{userRrn}, #{email},
+                                                                                     #{phone}, #{userAdd},
+                                                                                     #{userAdd2}) </insert>
+    <!--  유저 수정  -->
+    <update id="updateUser" parameterType="kr.or.nextit.backend.model.User">
+        UPDATE users SET user_id = #{userId}, user_name = #{userName}, user_rrn = #{userRrn}, email = #{email}, phone =
+        #{phone}, user_add = #{userAdd}, user_add2 = #{userAdd2}, admin = #{admin}, status = 'Y', update_at =
+        CURRENT_TIMESTAMP
+        <if test="userPass != null and userPass != ''">, user_pass = #{userPass}</if>
+        WHERE user_no = #{userNo}
+    </update>
+    <!--  유저 삭제  -->
+    <update id="deleteUser" parameterType="int"> UPDATE users
+                                                 SET status = 'N'
+                                                 WHERE user_no = #{userNo} </update>
+    <!--  ID 중복 확인 쿼리 추가  -->
+    <select id="checkIdExists" parameterType="String" resultType="boolean"> SELECT COUNT(*) > 0
+                                                                            FROM users
+                                                                            WHERE user_id = #{userId}; </select>
+    <!--  관리자 - 미승인된 의사 목록  -->
+    <select id="UnauthorizedDoctorList" resultType="kr.or.nextit.backend.model.User"> SELECT u.*,
+                                                                                             d.rank,
+                                                                                             md.department_name,
+                                                                                             GROUP_CONCAT(mt.treatment_name) AS treatments
+                                                                                      FROM users u
+                                                                                               JOIN doctors d ON u.user_no = d.doctor_no
+                                                                                               JOIN medical_department md ON d.department = md.department_no
+                                                                                               JOIN medical_treatment mt ON FIND_IN_SET(mt.treatment_no, d.treatment) > 0
+                                                                                      GROUP BY u.user_name, u.user_no
+                                                                                      ORDER BY u.create_at </select>
+    <!--  관리자 - 의사 권한 승인  -->
+    <update id="ApproveDoctorAuthority" parameterType="int"> UPDATE users
+                                                             SET admin = 1
+                                                             WHERE user_no = #{doctorNo} </update>
+</mapper>

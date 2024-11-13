@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.backend.mapper.FaqMapper">
+    <!-- 전체 FAQ 조회 -->
+    <select id="selectAllFaq" resultType="kr.or.nextit.backend.model.Faq">
+        SELECT *
+        FROM faq_board
+        where status='Y'
+        ORDER BY faq_id DESC
+    </select>
+
+    <!-- 전체 FAQ 필터링 조회 -->
+    <select id="selectAllFaqByOption" parameterType="map" resultType="kr.or.nextit.backend.model.Faq">
+        SELECT f.*
+        FROM faq_board f
+        where status='Y'
+            <if test="option == 'title'">
+                AND f.title LIKE CONCAT ('%', #{value}, '%')
+            </if>
+            <if test="option=='content'">
+                AND f.content LIKE CONCAT('%', #{value}, '%')
+            </if>
+        ORDER BY faq_id DESC
+    </select>
+
+    <!-- 특정 FAQ 조회 -->
+    <select id="selectFaq" parameterType="int" resultType="kr.or.nextit.backend.model.Faq">
+        SELECT *
+        FROM faq_board
+        WHERE faq_id = #{faqId}
+    </select>
+
+    <!-- FAQ 등록 -->
+    <select id="insertFaq" parameterType="kr.or.nextit.backend.model.Faq">
+        INSERT INTO faq_board (faq_id, title, content)
+        VALUES (#{faqId}, #{title}, #{content})
+    </select>
+
+    <!-- FAQ 수정 -->
+    <update id="updateFaq" parameterType="kr.or.nextit.backend.model.Faq">
+        UPDATE faq_board
+        SET title = #{title},
+            content = #{content}
+        WHERE faq_id = #{faqId}
+    </update>
+
+    <!-- FAQ 삭제 -->
+    <update id="deleteFaq" parameterType="int">
+        UPDATE faq_board
+        SET status = 'N'
+        WHERE faq_id = #{faqId}
+    </update>
+
+    <!-- 관리자 - FAQ 표시 -->
+    <update id="showFaq" parameterType="int">
+        UPDATE faq_board
+        SET status = 'Y'
+        WHERE faq_id = #{faqId}
+    </update>
+
+    <!-- 관리자 - 전체 FAQ 조회 -->
+    <select id="selectAdminAllFaq" resultType="kr.or.nextit.backend.model.Faq">
+        SELECT *
+        FROM faq_board
+        ORDER BY status, faq_id DESC
+    </select>
+
+
+</mapper>

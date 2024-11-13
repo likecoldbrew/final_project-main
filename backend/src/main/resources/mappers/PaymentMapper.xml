@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.nextit.backend.mapper.PaymentMapper">
+
+    <select id="getAllPayments" resultType="kr.or.nextit.backend.model.Payment">
+        SELECT * FROM payment_list
+    </select>
+
+    <select id="getPaymentsByUserNo" parameterType="int" resultType="kr.or.nextit.backend.model.Payment">
+        SELECT * FROM payment_list WHERE user_no = #{userNo}
+    </select>
+
+    <select id="getPaymentByImpUid" parameterType="string" resultType="kr.or.nextit.backend.model.Payment">
+        SELECT * FROM payment_list WHERE impuid = #{impuid}
+    </select>
+
+    <insert id="insertPayment">
+        INSERT INTO payment_list (impuid, user_no, name, pay_method, amount, status)
+        VALUES (#{impuid}, #{userNo}, #{name}, #{payMethod}, #{amount}, #{status})
+    </insert>
+
+    <update id="updatePayment">
+        UPDATE payment_list
+        SET name = #{name}, pay_method = #{payMethod}, amount = #{amount}, status = #{status}
+        WHERE impuid = #{impuid}
+    </update>
+
+    <delete id="deletePaymentByImpUid" parameterType="string">
+        DELETE FROM payment_list WHERE impuid = #{impuid}
+    </delete>
+
+    <select id="countByImpUid" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM payment_list WHERE impuid = #{impuid}
+    </select>
+
+</mapper>

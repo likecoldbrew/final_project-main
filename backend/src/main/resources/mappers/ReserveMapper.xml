@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.backend.mapper.ReserveMapper">
+
+    <!-- 의사 예약 목록 조회 -->
+    <select id="getReserveList" resultType="kr.or.nextit.backend.model.Reserve">
+        SELECT *
+        FROM reserve r
+                 INNER JOIN doctors d
+                            ON r.doctor_no = d.doctor_no
+                 INNER JOIN users u
+                            ON r.user_no = u.user_no
+                                AND d.doctor_no = #{doctorNo}
+        ORDER BY r.reserve_id DESC
+    </select>
+
+    <!-- 환자 예약 목록 조회 -->
+    <select id="getUserReserveList" resultType="kr.or.nextit.backend.model.Reserve">
+        select r.*
+             , (select user_name from users where user_no = r.doctor_no) as doctor_name
+        from reserve r
+                 inner join users u
+                            on r.user_no = u.user_no
+                                and u.user_no = #{userNo}
+        order by r.reserve_id desc
+    </select>
+
+    <!-- 환자 예약 목록 조회 (예약날짜 기준으로 정렬) -->
+    <select id="loginUserReserveList" resultType="kr.or.nextit.backend.model.Reserve">
+        select r.*
+             , u.user_name        as doctorName
+             , md.department_name as departmentName
+        from reserve r
+                 join users u on r.doctor_no = u.user_no
+                 join doctors d on r.doctor_no = d.doctor_no
+                 join medical_department md ON d.department = md.department_no
+        where r.user_no = #{userNo}
+        ORDER BY ABS(DATEDIFF(r.reserve_time, CURDATE())) asc ;
+    </select>
+    <!-- 예약 신청  -->
+    <insert id="requestReserve" parameterType="kr.or.nextit.backend.model.Reserve">
+        INSERT INTO reserve (user_no, doctor_no, medical_department, reserve_time, symptom, status)
+        VALUES(#{userNo}, #{doctorNo}, #{medicalDepartment}, #{reserveTime}, #{symptom}, 0);
+    </insert>
+
+
+    <!-- 특정 의사의 승인된 예약 목록 조회 (status = 1인 것만) -->
+    <select id="getDoctorNoReserveUser" resultType="kr.or.nextit.backend.model.Reserve">
+        SELECT *
+        FROM reserve r
+        INNER JOIN doctors d ON r.doctor_no = d.doctor_no
+        INNER JOIN users u ON r.user_no = u.user_no
+        WHERE r.doctor_no = #{doctorNo}
+        AND r.status = 1  <!-- 상태가 1(승인된 예약)인 것만 가져옴 -->
+    </select>
+
+    <!-- 모든 예약 조회 -->
+    <select id="selectAllReserves" resultType="kr.or.nextit.backend.model.Reserve">
+        SELECT reserve_id as reserveId,
+               user_no    as userNo,
+               doctor_no  as doctorNo,
+               medical_department,
+               reserve_time,
+               symptom,
+               status
+        FROM reserve
+    </select>
+
+    <!-- ID로 특정 예약 조회 -->
+    <select id="selectReserveById" parameterType="int" resultType="kr.or.nextit.backend.model.Reserve">
+        SELECT reserve_id as reserveId,
+               user_no    as userNo,
+               doctor_no  as doctorNo,
+               medical_department,
+               reserve_time,
+               symptom,
+               status
+        FROM reserve
+        WHERE reserve_id = #{reserveId}
+    </select>
+
+    <!-- 예약 삭제 -->
+    <delete id="deleteReserve" parameterType="int">
+        DELETE
+        FROM reserve
+        WHERE reserve_id = #{reserveId}
+    </delete>
+
+    <!-- 상태 업데이트 필터: 예약대기=0, 예약 승인=1, 진단완료=2  -->
+    <update id="updateReserveStatus">
+        UPDATE reserve
+        SET status = #{status}
+        WHERE reserve_id = #{reserveId}
+    </update>
+
+
+</mapper>

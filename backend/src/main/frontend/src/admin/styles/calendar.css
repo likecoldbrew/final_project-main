@@ -1,0 +1,32 @@
+/* styles/calendar.module.css */
+
+/* 기본 이벤트 스타일 */
+#dayOff-calendar-wrapper .rbc-event {
+    color: white; /* 텍스트 색상 */
+}
+
+/* 슬롯 선택 시 색상 */
+#dayOff-calendar-wrapper .rbc-selected-cell {
+    background-color: ghostwhite;
+}
+
+/* 헤더 스타일 */
+#dayOff-calendar-wrapper .rbc-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2rem;
+    background-color: darkseagreen; /* 헤더 배경색 */
+    color: white; /* 헤더 텍스트 색상 */
+}
+
+/* 지난 달 슬롯 색상 */
+#dayOff-calendar-wrapper .rbc-off-range-bg {
+    background: #f8f8f8;
+}
+
+/* 날짜 셀 꾸미기 */
+#dayOff-calendar-wrapper .rbc-date-cell {
+    text-align: left;
+    padding-left: 5px;
+}

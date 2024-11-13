@@ -1,0 +1,15 @@
+/* styles/calendar.css */
+
+/* 기본 이벤트 스타일 */
+#userCalendarContainer .rbc-header {
+    background-color: skyblue;
+}
+
+#userCalendarContainer .rbc-event {
+    background-color: transparent;
+    color: white;
+}
+
+#userCalendarContainer .rbc-slot-selectable {
+    background-color: #f5f5f5;
+}

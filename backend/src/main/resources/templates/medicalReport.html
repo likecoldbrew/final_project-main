@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta charset="utf-8" />
+  <style>
+      @media print {
+          button {
+              display: none !important; /* 강제 적용 */
+          }
+
+          @page {
+              margin: 0; /* 페이지 여백 제거 */
+          }
+          body {
+              margin: 0; /* 문서 내용 여백 제거 */
+          }
+      }
+  </style>
+</head>
+
+<body style="margin: 0;">
+
+<div id="p1" style="overflow: hidden; position: relative; background-color: white; width: 909px; height: 1284px;">
+
+  <style class="shared-css" type="text/css" >
+      .t {
+          transform-origin: bottom left;
+          z-index: 2;
+          position: absolute;
+          white-space: pre;
+          overflow: visible;
+          line-height: 1.5;
+      }
+      .text-container {
+          white-space: pre;
+      }
+      @supports (-webkit-touch-callout: none) {
+          .text-container {
+              white-space: normal;
+          }
+      }
+  </style>
+
+
+  <style type="text/css" >
+
+
+      #t2_1{left:352px;bottom:1087px;}
+      #t5_1{left:700px;bottom:1106px;letter-spacing:0.26px;}
+      #t7_1{left:91px;bottom:1055px;letter-spacing:-0.12px;word-spacing:2.84px;}
+      #t8_1{left:91px;bottom:1015px;letter-spacing:-0.12px;word-spacing:2.78px;}
+      #t9_1{left:342px;bottom:1015px;letter-spacing:-0.17px;}
+      #ta_1{left:466px;bottom:1015px;letter-spacing:-0.09px;}
+      #tb_1{left:106px;bottom:955px;letter-spacing:-0.18px;word-spacing:2.68px;}
+      #tc_1{left:285px;bottom:955px;letter-spacing:-0.1px;}
+      #td_1{left:412px;bottom:955px;letter-spacing:-0.15px;}
+      #te_1{left:485px;bottom:955px;letter-spacing:-0.13px;}
+      #tg_1{left:535px;bottom:965px;letter-spacing:-0.15px;}
+      #th_1{left:535px;bottom:945px;letter-spacing:-0.15px;}
+      #ti_1{left:600px;bottom:955px;letter-spacing:-0.09px;}
+      #tj_1{left:717px;bottom:965px;}
+      #tk_1{left:717px;bottom:945px;}
+      #tl_1{left:770px;bottom:955px;letter-spacing:-0.1px;}
+      #tm_1{left:106px;bottom:902px;letter-spacing:-0.18px;word-spacing:2.68px;}
+      #tn_1{left:240px;bottom:902px;letter-spacing:-0.09px;}
+      #to_1{left:591px;bottom:902px;letter-spacing:-0.11px;word-spacing:2.77px;}
+      #tp_1{left:102px;bottom:800px;}
+      #tq_1{left:186px;bottom:800px;}
+      #tq_2{left:250px; bottom:800px;}
+      #tt_1{left:692px;bottom:865px;letter-spacing:-0.18px;word-spacing:2.81px;}
+      #tu_1{left:692px;bottom:845px;letter-spacing:-0.18px;word-spacing:2.81px;}
+      #tu_2{left:706px; bottom:778px;}
+      #tv_1{left:111px;bottom:678px;}
+      #tw_1{left:144px;bottom:678px;}
+      #tx_1{left:178px;bottom:678px;}
+      #ty_1{left:275px;bottom:678px;}
+      #t11_1{left:475px;bottom:678px;letter-spacing:-0.12px;word-spacing:2.72px;}
+      #t12_1{left:620px;bottom:678px;}
+      #t15_1{left:106px;bottom:589px;}
+      #t17_1{left:106px;bottom:569px;}
+      #t19_1{left:106px;bottom:549px;}
+      #t1a_2{left:235px;top:650px;}
+      #t1b_1{left:111px;bottom:452px;}
+      #t1c_1{left:178px;bottom:452px;}
+      #t2c_1{left:300px;bottom:452px;}
+      #t1d_1{left:548px;bottom:452px;letter-spacing:-0.13px;word-spacing:2.63px;}
+      #t2d_1{left:665px;bottom:452px;letter-spacing:-0.13px;word-spacing:2.63px;}
+      #t1e_1{left:365px;bottom:358px;letter-spacing:0.28px;word-spacing:3.06px;}
+      #t1f_1{left:127px;bottom:299px;}
+      #t1i_1{left:285px;bottom:299px;letter-spacing:0.05px;}
+      #t1m_1{left:127px;bottom:270px;letter-spacing:0.26px;word-spacing:3.05px;}
+      #t1m_2{left:285px;bottom:270px;letter-spacing:0.26px;word-spacing:3.05px;}
+      #t1n_1{left:127px;bottom:241px;letter-spacing:0.25px;word-spacing:3.06px;}
+      #t1n_2{left:285px;bottom:241px;letter-spacing:0.25px;word-spacing:3.06px;}
+      #t1o_1{left:127px;bottom:212px;letter-spacing:0.22px;word-spacing:3.04px;}
+      #t1o_2{left:285px;bottom:212px;letter-spacing:0.22px;word-spacing:3.04px;}
+      #t1p_1{left:127px;bottom:182px;letter-spacing:0.22px;word-spacing:3.06px;}
+      #t1q_1{left:256px;bottom:182px;}
+      #t1q_2{left:285px;bottom:182px;}
+      #t1r_1{left:384px;bottom:182px;}
+      #t1s_1{left:457px;bottom:182px;letter-spacing:0.25px;}
+      #t1s_2{left:585px;bottom:182px;letter-spacing:0.25px;}
+      #t1t_1{left:695px;bottom:182px;}
+      #coating {
+          position: absolute; /* 요소를 특정 위치에 고정 */
+          left:705px;
+          bottom:1015px;
+          z-index: 9999; /* 가장 위로 올리기 위해 z-index 설정 */
+          width: 80px; /* 필요에 따라 이미지 크기 조정 */
+          height: 80px;
+      }
+
+      .stamp-container {
+          display: inline-block;
+          position: absolute;
+          width: 80px;
+          height: 80px;
+          left:635px;
+          bottom:175px;
+          z-index: 9999;
+      }
+
+      .stamp-svg {
+          width: 100%;
+          height: 100%;
+      }
+
+      .stamp-border {
+          fill: none;
+          stroke: red;
+          stroke-width: 2;
+      }
+
+      .stamp-text {
+          fill: red;
+          font-size: 25px;
+          font-weight: bold;
+          font-family: Arial, sans-serif;
+          filter: url(#stamp-texture);
+      }
+
+
+      .s1{font-size:31px;color:#000;}
+      .s2{font-size:18px;color:#000; font-weight: bold}
+      .s3{font-size:18px;color:#000;}
+      .s4{font-size:17px;color:#000;}
+  </style>
+
+  <!-- Begin page background -->
+  <div id="pg1Overlay" style="width:100%; height:100%; position:absolute; z-index:1; background-color:rgba(0,0,0,0); -webkit-user-select: none;"></div>
+  <svg viewBox="0 0 909 1284" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <style>
+          .g0{fill:none;stroke:#000;stroke-width:0.55;stroke-miterlimit:10;}
+          .g1{fill:none;stroke:#000;stroke-width:1.648;stroke-miterlimit:10;}
+      </style>
+    </defs>
+    <path d="M674.5 147.1V275.8M816.7 147.1V275.8M674.3 147.1H817M674.3 179.8H817m-142.7 96H817m-.3-128.7V275.8M674.5 147.1V275.8m-.2 0H817M674.3 147.1H817" class="g0"/>
+    <path d="M88.7 289.4v855.4" class="g1"/>
+    <path d="M216.6 289.4V853.8M400.7 289.4v52.1m55.9-52.1v52.1m.6 225.3V619m68.3-329.6v52.1M526.6 784v69.8m32.4-287V619m19.3-329.6v52.1M611.1 784v69.8m48.7-459.3V566.8m49.9-277.4v52.1M741 289.4v52.1" class="g0"/>
+    <path d="M817 289.4v855.4M88 289.4H818" class="g1"/>
+    <path d="M88 341.5H818m-730 53H818M88 566.8H818M88 619H818M88 784H818M88 853.8H818" class="g0"/>
+    <path d="M88 1144.8H818m-1-855.4v855.4M88.7 289.4v855.4m-.7 0H818M88 289.4H818" class="g1"/>
+  </svg>
+  <!-- End page background -->
+
+
+  <!-- Begin text definitions (Positioned/styled in CSS) -->
+  <div class="text-container">
+
+    <span id="t2_1" class="t s1"
+          th:text="${certificateType == 1 ? '진     단     서' : certificateType == 2 ? '소     견     서' : certificateType == 3 ? '입퇴원    확인서' : ''}">
+    </span>
+    <span id="t5_1" class="t s2">원부대조필</span>
+    <img id="coating" th:src="@{/images/coating.png}" alt="Coating Image">
+    <span id="t7_1" class="t s4">병록번호 <span th:text="${certificate.medicalRn()}">123456</span></span>
+    <span id="t8_1" class="t s4">연 번 호 <span th:text="${certificate.today() + certificateId}">000-001</span></span>
+    <span id="t9_1" class="t s4">주민등록번호 </span>
+    <span id="ta_1" class="t s4" th:text="${certificate.userRrn}">XXXX-XXXXXX</span>
+    <span id="tb_1" class="t s4">환자의 성명 </span>
+    <span id="tc_1" class="t s4" th:text="${certificate.userName}">홍길동</span>
+    <span id="td_1" class="t s4">성별 </span>
+    <span id="te_1" class="t s4" th:text="${certificate.gender()}">성별</span>
+    <span id="tg_1" class="t s4">생년 </span>
+    <span id="th_1" class="t s4">월일 </span>
+    <span id="ti_1" class="t s4" th:text="${certificate.birth()}">1990-01-01</span>
+    <span id="tj_1" class="t s4">연 </span>
+    <span id="tk_1" class="t s4">령 </span>
+    <span id="tl_1" class="t s4" th:text="${certificate.age()}">30</span>
+    <span id="tm_1" class="t s4">환자의 주소 </span>
+    <span id="tn_1" class="t s4" th:text="${certificate.userAdd + ' ' + certificate.userAdd2}">주소</span>
+    <span id="to_1" class="t s4">전 화 : <span th:text="${certificate.phone}">010-1234-5678</span></span>
+    <span id="tp_1" class="t s4">병 </span>
+    <span id="tq_1" class="t s4">명 </span>
+    <span id="tq_2" class="t s4" th:text="${certificate.diagnosis}">손목터널증후군</span>
+    <span id="tt_1" class="t s4">한 국 질 병 </span>
+    <span id="tu_1" class="t s4">분 류 번 호 </span>
+    <span id="tu_2" class="t s4" th:text="${certificate.diseaseCode()}">A00-A00</span>
+    <span id="tv_1" class="t s4">발 </span>
+    <span id="tw_1" class="t s4">병 </span>
+    <span id="tx_1" class="t s4">일 </span>
+    <span id="ty_1" class="t s4" th:text="${certificate.formattedOutbreakAt()}">2024년 10월 18일 </span>
+    <span id="t11_1" class="t s4">진 단 일 </span>
+    <span id="t12_1" class="t s4" th:text="${certificate.formattedVisitAt()}">2024년 10월 18일 </span>
+    <span id="t15_1" class="t s4">향          후</span>
+    <span id="t17_1" class="t s4">치          료</span>
+    <span id="t19_1" class="t s4">의          견</span>
+    <span id="t1a_2" class="t s4" th:utext="${certificate.content}">집에서 푹 쉬기</span>
+    <span id="t1b_1" class="t s4">비 </span>
+    <span id="t1c_1" class="t s4">고 </span>
+    <span id="t2c_1" class="t s4" th:text="${certificate.note}">비고 내용</span>
+    <span id="t1d_1" class="t s4">용 도 </span>
+    <span id="t2d_1" class="t s4" th:text="${certificate.purpose}">어디 제출 </span>
+    <span id="t1e_1" class="t s2" th:text="${certificateType == 1 ? '위와 같이 진단함' : certificateType == 2 ? '위와 같이 진료를 소견함' : ''}">위와 같이</span>
+    <span id="t1f_1" class="t s2">발      행      일 : </span>
+    <span id="t1i_1" class="t s2" th:text="${certificate.todayDate()}">2024년 10월 21일 </span>
+    <span id="t1m_1" class="t s2">의 료 기 관 명 : </span>
+    <span id="t1m_2" class="t s2" th:text="${hospital.hospitalNameKr}">메디곰</span>
+    <span id="t1n_1" class="t s2">주 소 및 명 칭 : </span>
+    <span id="t1n_2" class="t s2" th:text="${hospital.hospitalAdd}">병원의 주소</span>
+    <span id="t1o_1" class="t s2">전 화 및 FAX : </span>
+    <span id="t1o_2" class="t s2" th:text="${hospital.huntingLine}">병원의 전화번호</span>
+    <span id="t1p_1" class="t s2">면 허 번 호 </span>
+    <span id="t1q_1" class="t s2">제 </span>
+    <span id="t1q_2" class="t s2" th:text="${certificate.licenseNumber()}">00000000 </span>
+    <span id="t1r_1" class="t s2">호 </span>
+    <span id="t1s_1" class="t s2">의사성명 </span>
+    <span id="t1s_2" class="t s2" th:text="${certificate.doctorName}">의사성명 </span>
+    <div class="stamp-container">
+      <svg class="stamp-svg" viewBox="0 0 100 100">
+        <defs>
+          <filter id="stamp-texture">
+            <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
+          </filter>
+        </defs>
+        <rect x="5" y="5" width="90" height="90" class="stamp-border" />
+        <text class="stamp-text">
+          <tspan x="20" y="40" th:text="${stamp[0]}">길</tspan>
+          <tspan x="60" y="40" th:text="${stamp[1]}">일</tspan>
+          <tspan x="20" y="75" th:text="${stamp[2]}">원</tspan>
+          <tspan x="60" y="75">인</tspan>
+        </text>
+      </svg>
+    </div>
+    <span id="t1t_1" class="t s3">(인) </span>
+  </div>
+
+  <script>
+    // 페이지가 로드되면 자동으로 프린트 대화상자를 열도록 설정
+    window.onload = function() {
+      window.print();
+    };
+  </script>
+</body>
+
+
+</html>

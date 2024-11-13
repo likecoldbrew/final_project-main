@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.nextit.backend.mapper.RecommendDepartmentMapper">
+    <select id="findDepartmentsByKeywords" resultType="int">
+        SELECT DISTINCT d.department_no
+        FROM department_symptomkeywords d
+        WHERE d.keyword IN
+        <foreach item="keyword" collection="keywords" open="(" separator="," close=")">
+            #{keyword}
+        </foreach>
+        GROUP BY d.department_no
+        HAVING COUNT(DISTINCT d.keyword) = #{keywordCount}
+    </select>
+
+    <select id="findDepartmentNamesByNos" resultType="String">
+        SELECT md.department_name
+        FROM medical_department md
+        WHERE md.department_no IN
+        <foreach item="departmentNo" collection="departmentNos" open="(" separator="," close=")">
+            #{departmentNo}
+        </foreach>
+    </select>
+
+    <!-- DepartmentSymptomKeywordMapper.xml -->
+    <select id="findAllKeywords" resultType="string">
+        SELECT DISTINCT keyword FROM department_symptomkeywords
+    </select>
+</mapper>

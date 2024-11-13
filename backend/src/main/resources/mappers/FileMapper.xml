@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.backend.mapper.FilesMapper">
+<!--  첨부파일여러개  -->
+    <insert id="saveAll" parameterType="list">
+        INSERT INTO board_files (
+        board_id, file_name, file_original_name, file_path, file_type, file_size, uploaded_at
+        ) VALUES
+        <foreach item="file" collection="list" separator=",">
+            (#{file.boardId}, #{file.fileName}, #{file.fileOriginalName}, #{file.filePath}, #{file.fileType}, #{file.fileSize}, NOW())
+        </foreach>
+    </insert>
+
+<!--첨부파일 하나 저장-->
+    <insert id="save" parameterType="kr.or.nextit.backend.model.Files">
+        INSERT INTO board_files (
+            board_id, file_name, file_original_name, file_path, file_type, file_size, uploaded_at
+        ) VALUES (
+                     #{boardId}, #{fileName}, #{fileOriginalName}, #{filePath}, #{fileType}, #{fileSize}, NOW()
+                 )
+    </insert>
+
+    <!-- 특정 게시글의 모든 첨부파일 조회 -->
+    <select id="selectAllFiles" parameterType="int" resultType="kr.or.nextit.backend.model.Files">
+        SELECT bf.file_id,
+               bf.board_id,
+               bf.file_name,
+               bf.file_original_name,
+               bf.file_path,
+               bf.file_type,
+               bf.file_size,
+               bf.uploaded_at
+        FROM board_files bf
+        WHERE bf.board_id = #{boardId};
+    </select>
+
+    <!-- 게시글의 첨부파일 조회 -->
+    <select id="selectFile" parameterType="int" resultType="kr.or.nextit.backend.model.Files">
+        SELECT bf.file_id,
+               bf.file_name,
+               bf.file_original_name,
+               bf.file_path,
+               bf.file_type,
+               bf.file_size,
+               bf.uploaded_at
+        FROM board_files bf
+        WHERE bf.file_id = #{fileId};
+    </select>
+
+
+<!--  첨붛파일 삭제   -->
+    <delete id="deleteFiles" >
+        DELETE FROM board_files WHERE file_id =#{fileId}
+    </delete>
+    <!-- 파일 이름 중복되는 거 없는지 체크  -->
+    <select id="countByFileNameAndBoardId" resultType="int">
+        SELECT COUNT(*)
+        FROM board_files
+        WHERE file_name = #{fileName} AND board_id = #{boardId}
+    </select>
+
+</mapper>

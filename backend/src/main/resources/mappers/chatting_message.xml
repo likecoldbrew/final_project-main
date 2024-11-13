@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.nextit.backend.mapper.ChattingMessageMapper">
+
+    <insert id="insertChattingMessage" parameterType="kr.or.nextit.backend.model.ChattingMessage">
+        INSERT INTO chatting_message (chatting_room_id, sender, message, send_at)
+        VALUES (#{chattingRoomId}, #{sender}, #{message}, #{sendAt})
+    </insert>
+
+    <select id="selectMessagesByRoomId" parameterType="int" resultType="kr.or.nextit.backend.model.ChattingMessage">
+        SELECT c.*,
+               u.user_name,
+               m.department_name
+        FROM chatting_message c
+                 LEFT JOIN users u ON u.user_no = c.sender
+                 LEFT JOIN doctors d ON d.doctor_no = u.user_no
+                 LEFT JOIN medical_department m ON d.department = m.department_no
+        WHERE c.chatting_room_id = #{chattingRoomId}
+           OR (c.sender = 0 AND c.chatting_room_id = #{chattingRoomId});
+    </select>
+
+</mapper>

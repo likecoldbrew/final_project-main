@@ -1,0 +1,118 @@
+/* styles/calendar.module.css */
+
+/* 기본 이벤트 스타일 */
+#meal-calendar-wrapper .rbc-event {
+    background-color: transparent; /* 이벤트 배경색 */
+    color: black; /* 텍스트 색상 */
+    display: flex;
+    align-items: center; /* 수직 가운데 정렬 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    text-align: center;
+    height: 100%; /* 부모 높이를 유지 */
+    width: 100%; /* 부모 너비를 유지 */
+}
+
+#meal-calendar-wrapper .rbc-row-content .rbc-row-segment:nth-child(1) {
+    display: none;
+}
+
+#meal-calendar-wrapper .rbc-row-content .rbc-row-segment:last-child {
+    /*display: none;*/
+}
+
+#meal-calendar-wrapper .rbc-row-content div:nth-child(2) {
+    justify-content: space-around;
+}
+
+#meal-calendar-wrapper .rbc-date-cell {
+    border-bottom: 1px solid rgb(221, 221, 221);
+    border-left: 1px solid rgb(221, 221, 221);
+    background-color: lightyellow;
+}
+
+/* 이벤트 폰트 */
+#meal-calendar-wrapper .rbc-event-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: pre; /* 줄바꿈 유지 */
+    margin-top: 1px;
+    min-height: 9rem;
+    /*min-width: 10rem;*/
+}
+
+/* 이벤트 클릭했을 때 색상 */
+#meal-calendar-wrapper .rbc-event.rbc-selected, .rbc-day-slot .rbc-selected.rbc-background-event {
+    background-color: transparent;
+    /*font-weight: bold;*/
+    font-style: italic;
+    color: dimgray;
+}
+
+/* 슬롯 색상 변경 */
+#meal-calendar-wrapper .rbc-slot-selectable {
+    background-color: #f5f5f5; /* 기본 슬롯 색상 */
+}
+
+/* 오늘 슬롯 색상 */
+#meal-calendar-wrapper .rbc-today {
+    background-color: aliceblue;
+}
+
+#meal-calendar-wrapper .rbc-selected-cell {
+    background-color: ghostwhite;
+}
+
+/* 헤더 스타일 */
+#meal-calendar-wrapper .rbc-header {
+    display: none;
+}
+
+/* 날짜 클릭 시 커서 포인터 설정 */
+#meal-calendar-wrapper .rbc-slot-selectable {
+    cursor: pointer; /* 커서 모양 변경 */
+}
+
+#meal-calendar-wrapper .rbc-off-range-bg {
+    background: white;
+}
+
+#meal-calendar-wrapper .rbc-date-cell {
+    text-align: center;
+}
+
+#meal-calendar-wrapper .rbc-month-view {
+    border-left: none;
+}
+
+ /*첫 번째 자식 숨기기 */
+#meal-calendar-wrapper .rbc-day-bg:nth-child(1) {
+    display: none;
+    border-left: none;
+}
+
+/* 마지막 자식 숨기기 */
+#meal-calendar-wrapper .rbc-day-bg:last-child {
+    display: none;
+}
+
+/* 첫 번째 .rbc-header 숨기기 */
+#meal-calendar-wrapper .rbc-header:nth-child(1) {
+    display: none;
+}
+
+/* 마지막 .rbc-header 숨기기 */
+#meal-calendar-wrapper .rbc-header:last-child {
+    display: none;
+}
+
+/* 첫 번째 .rbc-date-cell 숨기기 */
+#meal-calendar-wrapper .rbc-date-cell:nth-child(1) {
+    display: none;
+}
+
+/* 마지막 .rbc-date-cell 숨기기 */
+#meal-calendar-wrapper .rbc-date-cell:last-child {
+    display: none;
+}

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.backend.mapper.MainCategoryMapper">
+    <!-- 최상위 카테고리 조회 -->
+    <select id="selectTopCategories" resultType="kr.or.nextit.backend.model.MainCategory">
+        SELECT category_id, name, parent_id, category_order, url_name
+        FROM categories_main
+        WHERE parent_id IS NULL
+        ORDER BY category_order
+    </select>
+
+    <!-- 특정 카테고리의 하위 카테고리 조회 -->
+    <select id="selectSubCategories" parameterType="int" resultType="kr.or.nextit.backend.model.MainCategory">
+
+        SELECT category_id, name, parent_id, category_order, url_name
+        FROM categories_main
+        WHERE parent_id = #{parentId}
+        ORDER BY category_order
+    </select>
+
+    <!-- urlName을 기준으로 카테고리 조회 (서브 카테고리) -->
+    <select id="selectCategoryWithParent" parameterType="String" resultType="kr.or.nextit.backend.model.MainCategory">
+        SELECT
+            c.name AS subCategory,
+            p.name AS parentCategory
+        FROM
+            categories_main c
+                LEFT JOIN
+            categories_main p ON c.parent_id = p.category_id
+        WHERE
+            c.url_name = #{urlName}
+          AND c.parent_id IS NOT NULL
+          AND c.status = 'y';
+    </select>
+
+    <!-- parent_id를 기준으로 상위 카테고리 조회 -->
+    <select id="selectCategoryById" parameterType="int" resultType="kr.or.nextit.backend.model.MainCategory">
+        SELECT * FROM categories_main WHERE category_id = #{categoryId}
+    </select>
+
+    <!-- 카테고리 순서 변경 -->
+    <update id="updateCategoryOrder">
+        UPDATE categories_main
+        SET category_order = #{categoryOrder}
+        WHERE category_id = #{categoryId}
+    </update>
+
+    <!-- 카테고리 이름 변경 -->
+    <update id="updateCategoryName">
+        UPDATE categories_main
+        SET name = #{name}
+        WHERE category_id = #{categoryId}
+    </update>
+</mapper>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.nextit.backend.mapper.ChattingMapper">
+
+    <insert id="insertChatting" parameterType="kr.or.nextit.backend.model.Chatting">
+        INSERT INTO chatting (chatting_room_id, invite_user_no, user_no)
+        VALUES
+        <foreach collection="userNos" item="userNo" separator=",">
+            (#{chattingRoomId}, #{inviteUserNo}, #{userNo})
+        </foreach>
+    </insert>
+
+    <insert id="insertChattingList" parameterType="list">
+        INSERT INTO chatting (chatting_room_id, invite_user_no, user_no)
+        VALUES
+        <foreach collection="list" item="chatting" separator=",">
+            (#{chatting.chattingRoomId}, #{chatting.userNo}, #{chatting.inviteUserNo})
+        </foreach>
+    </insert>
+
+    <select id="selectChattingByRoomId" parameterType="int" resultType="kr.or.nextit.backend.model.Chatting">
+        SELECT DISTINCT c.user_no, u.user_name
+        FROM chatting c
+                 JOIN users u ON c.user_no = u.user_no
+        WHERE c.chatting_room_id = #{chattingRoomId}
+        AND status = 'Y'
+    </select>
+
+    <select id="selectAllChatting" resultType="kr.or.nextit.backend.model.Chatting">
+        SELECT
+            c.chatting_room_id,
+            GROUP_CONCAT(u.user_name SEPARATOR ', ') AS userNames,
+            lastMessages.lastMessage,
+            lastMessages.lastMessageId,
+            lastReadMessage.last_read_message_id AS lastReadMessageId,
+            COALESCE(unreadCount.unread_message_count, 0) AS unreadMessageCount
+        FROM
+            chatting c
+                JOIN users u ON c.user_no = u.user_no
+                LEFT JOIN (
+                SELECT
+                    chatting_room_id,
+                    message AS lastMessage,
+                    message_id AS lastMessageId
+                FROM
+                    chatting_message
+                WHERE
+                    (chatting_room_id, send_at) IN (
+                        SELECT
+                            chatting_room_id,
+                            MAX(send_at)
+                        FROM
+                            chatting_message
+                        GROUP BY
+                            chatting_room_id
+                    )
+            ) AS lastMessages ON c.chatting_room_id = lastMessages.chatting_room_id
+                LEFT JOIN (
+                SELECT
+                    chatting_room_id,
+                    last_read_message_id
+                FROM
+                    chatting
+                WHERE
+                    user_no = #{userNo}
+            ) AS lastReadMessage ON c.chatting_room_id = lastReadMessage.chatting_room_id
+                LEFT JOIN (
+                SELECT
+                    c.chatting_room_id,
+                    COUNT(m.message_id) AS unread_message_count
+                FROM
+                    chatting c
+                        LEFT JOIN
+                    chatting_message m ON c.chatting_room_id = m.chatting_room_id
+                        AND m.message_id > c.last_read_message_id
+                WHERE
+                    c.status = 'Y'
+                  AND c.user_no = #{userNo}
+                GROUP BY
+                    c.chatting_room_id
+            ) AS unreadCount ON c.chatting_room_id = unreadCount.chatting_room_id
+        WHERE
+            c.status = 'Y'
+          AND c.chatting_room_id IN (
+            SELECT
+                chatting_room_id
+            FROM
+                chatting
+            WHERE
+                status = 'Y'
+              AND user_no = #{userNo}
+        )
+        GROUP BY
+            c.chatting_room_id
+        ORDER BY
+            lastMessages.lastMessageId DESC;
+    </select>
+
+    <select id="findAllChatRoomIds" resultType="int">
+        SELECT DISTINCT chatting_room_id FROM chatting
+    </select>
+
+    <update id="leaveChattingRoom" parameterType="kr.or.nextit.backend.model.Chatting">
+        UPDATE chatting
+        SET status = 'N'
+        WHERE chatting_room_id = #{chattingRoomId}
+          AND user_no = #{userNo}
+    </update>
+
+    <select id="getUserNosInRoom" parameterType="int" resultType="int">
+        SELECT user_no
+        FROM chatting
+        WHERE chatting_room_id = #{chattingRoomId}
+          AND status = 'Y'
+    </select>
+
+    <update id="updateLastReadMessageId" parameterType="kr.or.nextit.backend.model.Chatting">
+        UPDATE chatting
+        SET last_read_message_id = #{lastReadMessageId}
+        WHERE chatting_room_id = #{chattingRoomId}
+          AND user_no = #{userNo}
+    </update>
+
+    <select id="getTotalUnreadMessages" resultType="int">
+        SELECT
+            SUM(unread_messages_count) AS totalUnread
+        FROM (
+                 SELECT
+                     c.chatting_room_id,
+                     COUNT(cm.message_id) AS unread_messages_count
+                 FROM
+                     chatting c
+                         JOIN
+                     chatting_message cm
+                     ON
+                         c.chatting_room_id = cm.chatting_room_id
+                 WHERE
+                     c.user_no = #{userNo}
+                   AND cm.message_id > IFNULL(c.last_read_message_id, 0)
+                   AND c.status = 'Y'
+                 GROUP BY
+                     c.chatting_room_id
+             ) AS unread_counts;
+
+    </select>
+
+
+</mapper>

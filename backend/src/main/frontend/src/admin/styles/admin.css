@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background-color: rgba(243, 244, 246, 0.8);
+  width: 100vw;
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 0; /* 스크롤바를 아예 숨기기 */
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+}

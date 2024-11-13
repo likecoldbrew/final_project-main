@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.nextit.backend.mapper.CertificateMapper">
+
+    <insert id="insertCertificate" parameterType="kr.or.nextit.backend.model.Certificate">
+        INSERT INTO certificates (user_no, doctor_no, certificate_type, reference_id, purpose, status)
+        VALUES (#{userNo}, #{doctorNo}, #{certificateType}, #{referenceId}, #{purpose}, #{status})
+    </insert>
+
+<!--    <select id="selectCertificateByUserNo" resultType="kr.or.nextit.backend.model.Certificate">-->
+<!--        SELECT *-->
+<!--        FROM certificates-->
+<!--        WHERE user_no = #{userNo}-->
+<!--    </select>-->
+
+    <select id="selectCertificateByUserNo" resultType="kr.or.nextit.backend.model.Certificate">
+        select c.*,
+               u.user_name        as doctorName,
+               md.department_name as departmentName
+        from certificates c
+                 join users u on c.doctor_no = u.user_no
+                 join doctors d on c.doctor_no = d.doctor_no
+                 join medical_department md on d.department = md.department_no
+        where c.user_no = #{userNo}
+    </select>
+
+    <select id="selectCertificateByDoctorNo" resultType="kr.or.nextit.backend.model.Certificate">
+        select u.user_no,
+               u.user_name,
+               c.certificate_id,
+               c.doctor_no,
+               c.certificate_type,
+               c.reference_id,
+               c.content,
+               c.note,
+               c.purpose,
+               c.status,
+               r.diagnosis,
+               h.disease_name,
+               h.start_date,
+               h.end_date
+        from users u
+                 join certificates c
+                      on u.user_no = c.user_no
+                 LEFT JOIN medical_records r
+                           ON (c.certificate_type IN (1, 2) AND c.reference_id = r.record_id AND u.user_no = r.user_no)
+                 LEFT JOIN hospitalization h ON (c.certificate_type = 3 AND c.reference_id = h.hospitalization_id AND
+                                                 u.user_no = h.user_no)
+        where c.doctor_no = #{doctorNo}
+    </select>
+
+    <select id="selectCertificateById" resultType="kr.or.nextit.backend.model.Certificate">
+        SELECT
+            u.user_name,
+            u.user_rrn,
+            u.user_add,
+            u.user_add2,
+            u.phone,
+            r.diagnosis,
+            r.outbreak_at,
+            r.create_at AS visit_at,
+            c.content,
+            c.note,
+            c.purpose,
+            c.reference_id,
+            d.user_name AS doctor_name,
+            h.room_type,
+            h.seat_no,
+            h.disease_name,
+            h.start_date,
+            h.due_date,
+            h.end_date,
+            md.department_name
+        FROM certificates c
+                 JOIN users u ON c.user_no = u.user_no
+                 LEFT JOIN medical_records r ON (c.certificate_type IN (1, 2) AND c.reference_id = r.record_id AND u.user_no = r.user_no)
+                 LEFT JOIN hospitalization h ON (c.certificate_type = 3 AND c.reference_id = h.hospitalization_id AND u.user_no = h.user_no)
+                 LEFT JOIN medical_department md ON h.department_no = md.department_no
+                 LEFT JOIN users d ON c.doctor_no = d.user_no
+        WHERE c.certificate_id = #{certificateId};
+
+    </select>
+
+
+    <select id="selectAllCertificates" resultType="kr.or.nextit.backend.model.Certificate">
+        SELECT *
+        FROM certificates
+    </select>
+
+    <update id="updateCertificate" parameterType="kr.or.nextit.backend.model.Certificate">
+        UPDATE certificates
+        SET user_no          = #{userNo},
+            doctor_no        = #{doctorNo},
+            certificate_type = #{certificateType},
+            content          = #{content},
+            note             = #{note},
+            purpose          = #{purpose},
+            create_at        = NOW(),
+            valid_until      = #{validUntil},
+            status           = #{status}
+        WHERE certificate_id = #{certificateId}
+    </update>
+
+
+    <delete id="deleteCertificate" parameterType="int">
+        DELETE
+        FROM certificates
+        WHERE certificate_id = #{certificateId}
+    </delete>
+
+</mapper>

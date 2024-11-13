@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.nextit.backend.mapper.DoctorInfoMapper">
+
+    <!-- 모든 유저 조회 -->
+    <select id="getDoctors" resultType="kr.or.nextit.backend.model.DoctorInfo">
+        SELECT
+            u.user_name,
+            u.user_no,
+            md.department_name,
+            GROUP_CONCAT(mt.treatment_name) AS treatments
+        FROM
+            users u
+                JOIN
+            doctors d ON u.user_no = d.doctor_no
+                JOIN
+            medical_department md ON d.department = md.department_no
+                JOIN
+            medical_treatment mt ON FIND_IN_SET(mt.treatment_no, d.treatment) > 0
+        WHERE
+            u.admin = 1
+        GROUP BY
+            u.user_name, u.user_no
+    </select>
+
+    <!-- 이름 검색으로 의사 조회 -->
+    <select id="searchDoctors" parameterType="String" resultType="kr.or.nextit.backend.model.DoctorInfo">
+        SELECT
+        u.user_name,
+        u.user_no,
+        md.department_name,
+        GROUP_CONCAT(DISTINCT mt.treatment_name) AS treatments
+        FROM
+        users u
+        JOIN doctors d ON u.user_no = d.doctor_no
+        JOIN medical_department md ON d.department = md.department_no
+        JOIN medical_treatment mt ON FIND_IN_SET(mt.treatment_no, d.treatment) > 0
+        WHERE
+        u.admin = 1 AND u.status = 'Y' AND u.user_name LIKE CONCAT('%', #{value}, '%')  <!-- 검색어 조건 추가 -->
+        GROUP BY
+        u.user_name, u.user_no
+    </select>
+
+    <!-- 부서로 의사 이름 조회   -->
+    <select id="selectDoctorsByDepartment" parameterType="int" resultType="kr.or.nextit.backend.model.DoctorInfo">
+        SELECT
+            u.user_name,
+            u.user_no,
+            md.department_no
+        FROM
+            users u
+                JOIN doctors d ON u.user_no = d.doctor_no
+                JOIN medical_department md ON d.department = md.department_no
+        WHERE
+            u.admin = 1 AND u.status = 'Y' AND md.department_no=#{departmentNo}
+        GROUP BY
+            u.user_name, u.user_no
+    </select>
+
+
+    <!--  모든 진료과 검색   -->
+    <select id="getDepartments" parameterType="String" resultType="kr.or.nextit.backend.model.DoctorInfo">
+        SELECT
+            md.department_name,
+            GROUP_CONCAT(DISTINCT mt.treatment_name) AS treatments,
+            GROUP_CONCAT(DISTINCT u.user_name) AS user_names,  -- user_name을 포함하여 그룹화
+            md.department_no
+        FROM
+            medical_department md
+                JOIN doctors d ON d.department = md.department_no
+                JOIN users u ON u.user_no = d.doctor_no
+                JOIN medical_treatment mt ON FIND_IN_SET(mt.treatment_no, d.treatment) > 0
+        GROUP BY
+            md.department_name
+    </select>
+
+    <!-- 진료과 검색 -->
+    <select id="searchDepartment" parameterType="String" resultType="kr.or.nextit.backend.model.DoctorInfo">
+        SELECT
+        md.department_name,
+        GROUP_CONCAT(u.user_name) AS user_names,
+        GROUP_CONCAT(DISTINCT mt.treatment_name) AS treatments
+        FROM
+        users u
+        JOIN doctors d ON u.user_no = d.doctor_no
+        JOIN medical_department md ON d.department = md.department_no
+        JOIN medical_treatment mt ON FIND_IN_SET(mt.treatment_no, d.treatment) > 0
+        WHERE
+        md.department_name LIKE CONCAT('%', #{value}, '%') AND u.status = 'Y'
+        GROUP BY
+        md.department_name;  <!-- 진료과명으로 그룹화 -->
+    </select>
+
+    <!-- 모든 진료만 검색 -->
+    <select id="getTreatments" resultType="kr.or.nextit.backend.model.DoctorInfo">
+        SELECT
+        *
+        FROM medical_treatment
+    </select>
+
+    <!-- 모든 진료만 검색 -->
+    <select id="getAllDepartments" resultType="kr.or.nextit.backend.model.DoctorInfo">
+        SELECT
+            *
+        FROM medical_department
+    </select>
+
+    <!-- 의사 경력 조회 -->
+    <select id="getDoctorCareer" resultType="kr.or.nextit.backend.model.DoctorInfo">
+        SELECT *, md.department_name
+        FROM doctors d
+                 INNER JOIN users u
+                            ON u.user_no = d.doctor_no
+                 INNER JOIN medical_department md
+                            ON d.department = md.department_no
+                 INNER JOIN doctors_career dc
+                            ON d.doctor_no = dc.doctor_no
+                                AND u.user_no = #{userNo}
+    </select>
+
+    <!-- 의사 학력 조회 -->
+    <select id="getDoctorEducation" resultType="kr.or.nextit.backend.model.DoctorInfo">
+        SELECT * FROM doctors d
+                          INNER JOIN users u
+                                     ON u.user_no = d.doctor_no
+                          INNER JOIN doctors_education de
+                                     ON d.doctor_no = de.doctor_no
+                                         AND u.user_no = #{userNo}
+    </select>
+
+
+    <!-- 특정 의사 (마이페이지) 조회  -->
+    <select id="getSelectDoctorMypage">
+        SELECT *
+        FROM doctors d
+                 INNER JOIN
+             users u ON u.user_no = d.doctor_no
+                 LEFT JOIN
+             doctors_career dc ON d.doctor_no = dc.doctor_no
+                 LEFT JOIN
+             doctors_education de ON d.doctor_no = de.doctor_no
+        WHERE d.doctor_no = #{doctorNo}
+        GROUP BY d.doctor_no, u.user_name;
+    </select>
+
+    <insert id="insertDoctorCareerAndEducation" parameterType="kr.or.nextit.backend.model.DoctorInfo">
+        INSERT INTO doctors_career (doctor_no, career_date, career_info)
+        VALUES (#{doctorNo}, #{careerDate}, #{careerInfo}) ON DUPLICATE KEY
+        UPDATE
+            career_date = #{careerDate},
+            career_info = #{careerInfo};
+
+        --         INSERT INTO doctors_education (doctor_no, education_date, education_background)
+--         VALUES (#{doctorNo}, #{educationDate}, #{educationBackground}) ON DUPLICATE KEY
+--         UPDATE
+--             education_date = #{educationDate},
+--             education_background = #{educationBackground};
+    </insert>
+
+    <!--  의사 학력 insert  -->
+    <insert id="insertDoctorEducation" parameterType="kr.or.nextit.backend.model.DoctorInfo">
+        INSERT INTO doctors_education (doctor_no, education_date, education_background)
+        VALUES (#{doctorNo}, #{educationDate}, #{educationBackground})
+    </insert>
+
+    <!--  의사 경력 insert  -->
+    <insert id="insertDoctorCareer" parameterType="kr.or.nextit.backend.model.DoctorInfo">
+        INSERT INTO doctors_career (doctor_no, career_date, career_info)
+        VALUES (#{doctorNo}, #{careerDate}, #{careerInfo})
+    </insert>
+
+    <!--  의사 학력 update  -->
+    <update id="updateDoctorEducation">
+        INSERT INTO doctors_education(education_id, doctor_no, education_date, education_background)
+        <foreach collection="educations"
+                 item="item"
+                 separator=","
+                 open="VALUES ">
+            (#{item.educationId}, #{item.doctorNo}, #{item.educationDate}, #{item.educationBackground})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        education_date = VALUES(education_date),
+        education_background = VALUES(education_background)
+    </update>
+
+    <!--  의사 경력 업데이트 -->
+    <update id="updateDoctorCareer">
+        INSERT INTO doctors_career(career_id,doctor_no,career_date,career_info)
+        <foreach collection="careers"
+                 item="item"
+                 separator=","
+                 open="VALUES">
+            (#{item.careerId},#{item.doctorNo},#{item.careerDate},#{item.careerInfo})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        career_date=VALUES(careerDate),
+        career_info= VALUES(careerInfo)
+    </update>
+</mapper>

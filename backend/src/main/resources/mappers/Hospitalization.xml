@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.backend.mapper.HospitalizationMapper">
+    <!-- 전체 유저 입원 내역 목록 조회 -->
+    <select id="getAllHospitalizationList" resultType="kr.or.nextit.backend.model.Hospitalization">
+        SELECT h.*
+             , r.*
+             , u.user_name  AS userName
+             , u2.user_name AS doctorName
+             , md.department_name
+        FROM hospitalization h
+                 JOIN users u
+                      ON h.user_no = u.user_no
+                 JOIN users u2
+                      ON h.doctor_no = u2.user_no
+                 JOIN doctors d
+                      ON h.doctor_no = d.doctor_no
+                 JOIN medical_department md
+                      ON d.department = md.department_no
+                 JOIN room r
+                      ON h.room_no = r.room_no
+        ORDER BY h.end_date DESC
+    </select>
+
+    <!-- 의사 - 방 정보 가져오기 -->
+    <select id="getRoomInfoByRoomNo" resultType="kr.or.nextit.backend.model.Hospitalization">
+        SELECT *
+        FROM room
+        WHERE room_no = #{roomNo}
+    </select>
+
+    <!-- 의사 - 입원 신청 내역 목록 조회 -->
+    <select id="getHospitalizationListByDoctor" resultType="kr.or.nextit.backend.model.Hospitalization">
+        SELECT h.*
+             , r.*
+             , u.user_name
+             , md.department_name
+        FROM hospitalization h
+                 JOIN users u
+                      ON h.user_no = u.user_no
+                 JOIN doctors d
+                      ON h.doctor_no = d.doctor_no
+                 JOIN medical_department md
+                      ON d.department = md.department_no
+                 JOIN room r
+                      ON h.room_no = r.room_no
+        WHERE h.doctor_no = #{doctorNo}
+        ORDER BY h.hospitalization_id DESC
+    </select>
+
+    <!-- 특정 유저 입원 내역 목록 조회 -->
+    <select id="getHospitalizationListByUser" resultType="kr.or.nextit.backend.model.Hospitalization">
+        SELECT h.*
+             , r.*
+             , u.user_name AS doctorName
+             , md.department_name
+        FROM hospitalization h
+                 JOIN users u ON h.doctor_no = u.user_no
+                 JOIN doctors d ON h.doctor_no = d.doctor_no
+                 JOIN medical_department md ON d.department = md.department_no
+                 JOIN room r ON h.room_no = r.room_no
+        WHERE h.user_no = #{userNo}
+        ORDER BY h.hospitalization_id DESC
+    </select>
+
+    <!-- 입원 내역 하나 조회 -->
+    <select id="getHospitalizationByHospitalId" resultType="kr.or.nextit.backend.model.Hospitalization">
+        SELECT h.*
+             , r.*
+             , u.user_name AS doctorName
+             , md.department_name
+        FROM hospitalization h
+                 JOIN users u ON h.doctor_no = u.user_no
+                 JOIN doctors d ON h.doctor_no = d.doctor_no
+                 JOIN medical_department md ON d.department = md.department_no
+        WHERE h.hospitalization_id = #{hospitalizationId}
+    </select>
+
+    <!-- 의사 - 입원 등록 -->
+    <insert id="registerHospitalization">
+        INSERT INTO hospitalization
+        (user_no, doctor_no, room_no, department_no, disease_name, start_date, due_date)
+        VALUES (#{userNo}, #{doctorNo}, #{roomNo}, #{departmentNo}, #{diseaseName}, #{startDate}, #{dueDate})
+    </insert>
+
+    <!-- 의사 - 입원 수정 -->
+    <update id="modifyHospitalization">
+        UPDATE hospitalization
+        SET room_no    = #{roomNo},
+            start_date = #{startDate},
+            due_date   = #{dueDate}
+        WHERE hospitalization_id = #{hospitalizationId}
+    </update>
+
+    <!-- 관리자 - 입원 승인 -->
+    <update id="approveHospitalizationByHospitalId">
+        UPDATE hospitalization
+        SET status = 2
+        WHERE hospitalization_id = #{hospitalizationId}
+    </update>
+
+    <!-- 관리자 - 퇴원으로 변경 -->
+    <update id="dischargeHospitalizationByHospitalId">
+        UPDATE hospitalization
+        SET status   = 3,
+            end_date = NOW()
+        WHERE hospitalization_id = #{hospitalizationId}
+    </update>
+
+</mapper>

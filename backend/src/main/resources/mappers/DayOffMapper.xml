@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.backend.mapper.DayOffMapper">
+
+    <!-- 관리자 - 휴무 신청 목록 전체 조회 -->
+    <select id="getAllDayOffList" resultType="kr.or.nextit.backend.model.DayOff">
+        SELECT dd.*, u.user_name
+        FROM doctors_dayoff dd
+        INNER JOIN users u
+        ON u.user_no = dd.doctor_no
+    </select>
+
+    <!-- 의사 - 휴무 신청 목록 -->
+    <select id="getDoctorDayOffList" parameterType="int" resultType="kr.or.nextit.backend.model.DayOff">
+        SELECT dd.*, u.user_name
+        FROM doctors_dayoff dd
+        INNER JOIN users u
+        ON u.user_no = dd.doctor_no
+        WHERE dd.doctor_no = #{doctorNo}
+    </select>
+
+    <!-- 휴무 신청 조회 (휴무 번호) -->
+    <select id="getDayOffByNo" parameterType="int" resultType="kr.or.nextit.backend.model.DayOff">
+        SELECT dd.*, u.user_name
+        FROM doctors_dayoff dd
+        INNER JOIN users u
+        ON u.user_no = dd.doctor_no
+        WHERE dd.day_off_no = #{dayOffNo}
+    </select>
+
+    <!-- 휴무 등록 -->
+    <insert id="insertDayOff" parameterType="kr.or.nextit.backend.model.DayOff">
+        INSERT INTO doctors_dayoff (doctor_no, day_off, day_off_type, color)
+        VALUES (#{doctorNo}, #{dayOff}, #{dayOffType}, #{color})
+    </insert>
+
+    <!-- 휴무 수정 -->
+    <update id="updateDayOff" parameterType="kr.or.nextit.backend.model.DayOff">
+        UPDATE doctors_dayoff
+        SET day_off = #{dayOff},
+            day_off_type = #{dayOffType},
+            color = #{color}
+        WHERE day_off_no = #{dayOffNo}
+    </update>
+
+    <!-- 관리자 - 휴무 승인 -->
+    <update id="approveDayOffStatus" parameterType="int">
+        UPDATE doctors_dayoff
+        SET status = 'Y'
+        WHERE day_off_no = #{dayOffNo}
+    </update>
+
+    <!-- 휴무 삭제 -->
+    <delete id="deleteDayOff" parameterType="int">
+        DELETE
+        FROM doctors_dayoff
+        WHERE day_off_no = #{dayOffNo}
+    </delete>
+
+</mapper>

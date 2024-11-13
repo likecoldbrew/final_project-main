@@ -1,0 +1,28 @@
+/* styles/doctorCalendar.css */
+
+/*메인 페이지용 스타일*/
+#adminMainCalendar .rbc-header {
+    background-color: mediumaquamarine;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+}
+
+#adminMainCalendar .rbc-event {
+    background-color: transparent;
+    color: white;
+}
+
+#adminMainCalendar .rbc-slot-selectable {
+    background-color: #f5f5f5;
+}
+
+/*지난일정 배경색*/
+#adminMainCalendar .rbc-off-range-bg {
+    background: #f5faf8;
+}
+
+/*오늘 날짜 배경색*/
+#adminMainCalendar .rbc-today {
+    background-color:#dcfae2;
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.backend.mapper.ProfileMapper">
+
+    <!-- 프로필 전체 조회  -->
+    <select id="getAllProfiles" resultType="kr.or.nextit.backend.model.Profile">
+        SELECT * FROM  doctors_pic
+    </select>
+
+    <!-- 프로필 하나 조회 -->
+    <select id="getProfileById" resultType="kr.or.nextit.backend.model.Profile">
+        SELECT * FROM doctors_pic WHERE doctor_no = #{doctorNo}
+    </select>
+
+    <!-- 프로필 업로드 -->
+    <insert id="uploadProfile" parameterType="kr.or.nextit.backend.model.Profile">
+        INSERT INTO doctors_pic
+        (doctor_no, file_original_name, file_name, file_path, file_size)
+        VALUES
+            (#{doctorNo}, #{fileOriginalName}, #{fileName}, #{filePath}, #{fileSize})
+    </insert>
+
+    <!-- 배너 삭제 -->
+    <delete id="removeProfile">
+        DELETE FROM doctors_pic WHERE doctor_no = #{doctorNo}
+    </delete>
+
+</mapper>

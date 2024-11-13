@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.backend.mapper.MealMapper">
+
+    <!-- 식단 목록 전체 조회 -->
+    <select id="getAllMealList" resultType="kr.or.nextit.backend.model.Meal">
+        SELECT * FROM meal
+    </select>
+
+    <!-- 식단 하나 조회 -->
+    <select id="getMealById" parameterType="int" resultType="kr.or.nextit.backend.model.Meal">
+        SELECT * FROM meal
+        WHERE meal_id = #{mealId}
+    </select>
+
+    <!-- 식단 등록 -->
+    <insert id="registerMeal" parameterType="kr.or.nextit.backend.model.Meal">
+        INSERT INTO meal (today_meal, meal_date)
+        VALUES (#{todayMeal}, #{mealDate})
+    </insert>
+
+    <!-- 식단 수정 -->
+    <update id="modifyMeal" parameterType="kr.or.nextit.backend.model.Meal">
+        UPDATE meal
+        SET today_meal = #{todayMeal},
+            meal_date = #{mealDate}
+        WHERE meal_id = #{mealId}
+    </update>
+
+    <!-- 식단 삭제 -->
+    <delete id="removeMeal" parameterType="int">
+        UPDATE meal
+        SET today_meal = ""
+        WHERE meal_id = #{mealId}
+    </delete>
+
+    <select id="getMealsByDateRange" parameterType="map" resultType="kr.or.nextit.backend.model.Meal">
+        SELECT *
+        FROM meal
+        WHERE meal_date BETWEEN #{startDate} AND #{endDate} ORDER BY meal_date
+    </select>
+</mapper>

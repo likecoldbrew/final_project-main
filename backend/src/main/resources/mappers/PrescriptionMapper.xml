@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.backend.mapper.PrescriptionMapper">
+
+    <!-- 의사 처방 목록 조회 -->
+    <select id="getPrescriptionList" resultType="kr.or.nextit.backend.model.Prescription">
+        SELECT *
+        FROM medical_records mr
+                 INNER JOIN prescriptions p
+                            ON mr.record_id = p.medical_record_id
+                 INNER JOIN doctors d
+                            ON d.doctor_no = mr.doctor_no
+                 inner join users u
+                            on u.user_no = mr.user_no
+                                AND d.doctor_no = #{doctorNo}
+    </select>
+
+    <!-- 환자 처방 목록 조회 -->
+    <select id="getUserPrescriptionList" resultType="kr.or.nextit.backend.model.Prescription">
+        select p.*,
+               (select user_name from users where user_no = mr.doctor_no) as doctor_name
+        from medical_records mr
+                 inner join prescriptions p
+                            on mr.record_id = p.medical_record_id
+                 inner join users u
+                            on u.user_no = mr.user_no
+                                and u.user_no = #{userNo}
+    </select>
+
+    <!-- 특정 유저 처방 내역 조회 -->
+    <select id="selectPrescription" resultType="kr.or.nextit.backend.model.Prescription">
+        SELECT p.*,
+               u.user_name AS doctor_name,
+               md.department_name,
+               mr.user_no
+        FROM prescriptions p
+                 JOIN medical_records mr ON p.medical_record_id = mr.record_id
+                 JOIN users u ON mr.doctor_no = u.user_no
+                 JOIN doctors d ON mr.doctor_no = d.doctor_no
+                 JOIN medical_department md ON d.department = md.department_no
+        where mr.user_no = #{userNo}
+    </select>
+
+    <!-- 처방 내역 상세 조회   -->
+    <select id="selectPrescriptionDetail" resultType="kr.or.nextit.backend.model.Prescription">
+        SELECT p.*,
+               u.user_name AS doctor_name,
+               md.department_name,
+               mr.user_no
+        FROM prescriptions p
+                 JOIN medical_records mr ON p.medical_record_id = mr.record_id
+                 JOIN users u ON mr.doctor_no = u.user_no
+                 JOIN doctors d ON mr.doctor_no = d.doctor_no
+                 JOIN medical_department md ON d.department = md.department_no
+        where p.prescription_id = #{prescriptionId}
+    </select>
+
+    <!-- 처방 내역 추가 -->
+    <insert id="insertPrescription">
+        INSERT INTO prescriptions (medical_record_id, medication_name, dosage, frequency, duration, instructions,
+                                   create_at, update_at)
+        VALUES (#{medicalRecordId}, #{medicationName}, #{dosage}, #{frequency}, #{duration}, #{instructions},
+                now(), now())
+    </insert>
+
+    <!-- 처방 내역 업데이트 -->
+    <update id="updatePrescription">
+        UPDATE prescriptions
+        SET medical_record_id =#{medicalRecordId},
+            medication_name = #{medicationName},
+            dosage          = #{dosage},
+            frequency       = #{frequency},
+            duration        = #{duration},
+            instructions    = #{instructions},
+            update_at       = now()
+        WHERE prescription_id = #{prescriptionId}
+    </update>
+
+    <!-- 특정 처방 내역 상세 조회 (doctor)  -->
+    <select id="patientPrescription">
+        SELECT *
+        FROM prescriptions p
+                 INNER JOIN medical_records mr
+                            ON p.medical_record_id = mr.record_id
+                 INNER JOIN users u
+                            ON mr.user_no = u.user_no
+        WHERE p.medical_record_id = #{medicalRecordId};
+    </select>
+</mapper>
