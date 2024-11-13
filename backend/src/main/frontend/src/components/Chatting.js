@@ -635,9 +635,7 @@ const Chatting = () => {
               onContextMenu={(e) => rightClickLeave(e, room.chattingRoomId)}
             >
               {room.userNames.length > 13 ? `${room.userNames.slice(0, 13)}...` : room.userNames}
-              <div className="mt-1 text-sm text-gray-600 italic">
-                최근대화: {room.lastMessage.length > 8 ? `${room.lastMessage.slice(0, 8)}...` : room.lastMessage}
-              </div>
+
               {/* 새로운 메시지가 있는 경우에만 빨간 점을 표시 */}
               {(room.lastMessageId > room.lastReadMessageId || room.hasNewMessage) && (
                 <span
