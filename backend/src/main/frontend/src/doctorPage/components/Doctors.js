@@ -4,7 +4,6 @@ import { Menu, MessageSquare } from "lucide-react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useUser } from "../../utils/UserContext";
 import { Home } from "@mui/icons-material";
-import Chatting from "../../components/Chatting";
 
 // 아이콘 배열 (카테고리와 순서를 맞춰서 배치)
 const icons = {
@@ -27,36 +26,6 @@ const SidebarAndNavbar = () => {
   const toggleDropdown = (key) => {
     setActiveDropdown(activeDropdown === key ? null : key);  // 드롭다운 메뉴 토글
   };
-
-  const [totalUnreadMessages, setTotalUnreadMessages] = useState(0); // 안 읽은 채팅 총 계수
-  const [isChattingModalOpen, setIsChattingModalOpen] = useState(false);
-
-  const toggleChattingModal = () => {
-    setIsChattingModalOpen(prevState => !prevState);
-  };
-
-  const fetchUnreadMessages = useCallback(async () => {
-    if (!userInfo.userNo) return; // 사용자 번호가 없으면 API 호출을 하지 않음
-    try {
-      const response = await fetch(`/api/chatting/totalUnReadMessage/${userInfo.userNo}`);
-      if (response.ok) {
-        const data = await response.json();
-        setTotalUnreadMessages(data.totalUnreadMessages); // 안 읽은 메시지 수 상태 업데이트
-      } else {
-        console.error("Failed to fetch unread messages");
-      }
-    } catch (error) {
-      console.error("Error fetching unread messages:", error);
-    }
-  }, [userInfo.userNo]);
-
-  useEffect(() => {
-    if (userInfo.userNo) {
-      fetchUnreadMessages();
-    }
-  }, [userInfo.userNo, fetchUnreadMessages]);
-
-
   // 이제 userInfo를 직접 사용 가능
   // console.log(userInfo);
   // 카테고리를 기반으로 동적 메뉴 생성
@@ -140,10 +109,8 @@ const SidebarAndNavbar = () => {
               <p className="text-xs text-gray-500">{userInfo.role}</p>
             </div>
           </div>
-          <button className="relative hover:text-blue-400 transition-colors" onClick={handleLogout}>
-            <Link to="/main/empSite">
-              <LogOut className="w-6 h-6" />
-            </Link>
+          <button className="relative hover:text-blue-400 transition-colors">
+            <LogOut className="w-6 h-6" onClick={handleLogout} />
           </button>
           <button onClick={toggleSidebar} className="md:hidden">
             <FileText size={24} />
@@ -244,11 +211,6 @@ const SidebarAndNavbar = () => {
           <Outlet /> {/* URL에 따라 렌더링될 콘텐츠 */}
         </div>
       </main>
-      {isChattingModalOpen && (
-        <div className="inset-0 bg-opacity-50 w-2/5 h-40">
-          <Chatting />
-        </div>
-      )}
     </div>
   );
 };

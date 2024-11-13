@@ -54,6 +54,8 @@ export const Home = () => {
         }
     };
 
+
+    console.log("환자정보",patientList);
     //모달창 열기
     const handleMealSchedule = () => {
         setMealScheduleOpen(true);
@@ -121,7 +123,7 @@ export const Home = () => {
                             className="text-sky-500 hover:font-bold hover:text-sky-600 cursor-pointer">예약 승인 페이지로 이동
                       </Link>
                   </div>
-                  {patientList.length > 0 ? patientList.slice(0, 5).map((patient, index) => {
+                  {patientList.length>0 ? patientList.slice(0, 5).map((patient, index) => {
                       return (
                         <div key={index} className="flex items-center mb-4 space-x-2 ml-3">
                             <span className="mr-3">{index + 1}</span>
