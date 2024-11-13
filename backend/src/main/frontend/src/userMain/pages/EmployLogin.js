@@ -32,7 +32,7 @@ const SignInSignUp = () => {
   const [alertModalOpen, setAlertModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalButtonText, setModalButtonText] = useState("확인");
-  const [modalRedirectPath, setRedirectPath] = useState("/");
+  const [modalRedirectPath, setRedirectPath] = useState("/main/empSite");
   const [isSuccess, setIsSuccess] = useState(false);
 
   //회원가입 폼
@@ -331,6 +331,7 @@ const SignInSignUp = () => {
           formData.append("profileImage", profileImage); // 프로필 이미지를 FormData에 추가
         }
         try {
+        console.log("e등러가야된느값", formData)
           // 사용자 등록 요청
           await axios.post("/api/users/registerDoctor", formData, {
             headers: {
@@ -342,13 +343,13 @@ const SignInSignUp = () => {
           setModalMessage("회원가입 완료되었습니다. 관리자의 승인 이후 이용가능합니다.");
           setModalButtonText("로그인 페이지로 이동");
           setIsSuccess(true);
-          setRedirectPath("/empSite");
+          setRedirectPath("/main/empSite");
         } catch (error) {
           setAlertModalOpen(true);
           setModalMessage("회원가입이 실패했습니다.");
           setModalButtonText("다시하기");
           setIsSuccess(false); // isSuccess 상태 업데이트
-          setRedirectPath("/empSite");
+          setRedirectPath("/main/empSite");
         }
       }
     }

@@ -16,8 +16,8 @@ const UserCertificate = () => {
   const [medicalRecords, setMedicalRecords] = useState([]);
   //입원내역 정보
   const [hospitalization, setHospitalization] = useState([]);
-  //유저정보
-  const { userInfo, isLoading } = useUser();
+
+
   // AlertModal 상태 관리
   const [alertModalOpen, setAlertModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -42,27 +42,54 @@ const UserCertificate = () => {
     purpose: ""
   });
 
-  useEffect(() => {
-    // 화면 로딩시 로그인 체크
-    if (!isLoading && !userInfo.userId) {
-      setModalMessage("로그인 후 이용 가능합니다.");
+  /* 시작점 */
+  const [userInfo, setUserInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("token"); // JWT를 로컬 스토리지에서 가져옴
+    if (token) {
+      try {
+        const response = await fetch("/api/users/me", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}` // JWT 포함
+          }
+        });
+
+        console.log(response.ok)
+        if (response.ok) {
+          const data = await response.json(); // 서버에서 반환하는 사용자 정보
+          setIsLoading(true); //로그인 상태 확인용
+          setUserInfo(data); // 사용자 정보 상태 업데이트
+          fetchRecords(data)
+          fetchUsers(data); //사용자정보조회
+        } else {
+          console.error("사용자 정보를 가져오는 데 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+      }
+    }else{
+      setModalMessage("로그인 후 이용가능합니다.");
       setModalButtonText("로그인 하기");
       setAlertModalOpen(true);
       setIsSuccess(false); // isSuccess 상태 업데이트
-      setRedirectPath("/main/login"); // 로그인 페이지로 보내기
-    } else {
-      window.scrollTo(0, 0);
+      setRedirectPath("/main/login"); // 로그인페이지로 보내기
     }
-    fetchRecords();
-    fetchHospitalization();
-  }, [isLoading, userInfo]);
+  };
+
+  useEffect(()=>{
+    fetchUserInfo()
+  },[])
+  /* 종료점 */
 
   useEffect(() => {
 
   }, [certificateData.certificateType]);
 
   //진료내역 불러오기
-  const fetchRecords = async () => {
+  const fetchRecords = async (userInfo) => {
     try {
       const response = await fetch(`/api/medical_record/loginUser/${userInfo.userNo}`);
       const data = await response.json();
@@ -314,7 +341,7 @@ const UserCertificate = () => {
                     </p>)}
                   </div>
                   <div className="flex justify-end">
-                    {userInfo.userId ? (
+                    {userInfo ? (
                       <button
                         type="submit"
                         onClick={goCertificate}

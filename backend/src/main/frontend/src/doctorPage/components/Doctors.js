@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FileText, Folder, FolderPlus, LogOut, Send, Settings as FeatherSettings, Smile, User } from "react-feather";
 import { Menu, MessageSquare } from "lucide-react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useUser } from "../../utils/UserContext";
 import { Home } from "@mui/icons-material";
+import Chatting from "../../components/Chatting";
 
 // 아이콘 배열 (카테고리와 순서를 맞춰서 배치)
 const icons = {
@@ -16,15 +17,46 @@ const icons = {
 };
 
 const SidebarAndNavbar = () => {
-  const { userInfo } = useUser(); // 현재 로그인한 사용자 정보 가져오기
+  const { userInfo, setUserInfo } = useUser(); // 현재 로그인한 사용자 정보 가져오기
   const [isOpen, setIsOpen] = useState(true);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
-
+  //nav 이동
+  const navigate = useNavigate();
   const toggleSidebar = () => setIsOpen(!isOpen);  // 사이드바 토글
   const toggleDropdown = (key) => {
     setActiveDropdown(activeDropdown === key ? null : key);  // 드롭다운 메뉴 토글
   };
+
+  const [totalUnreadMessages, setTotalUnreadMessages] = useState(0); // 안 읽은 채팅 총 계수
+  const [isChattingModalOpen, setIsChattingModalOpen] = useState(false);
+
+  const toggleChattingModal = () => {
+    setIsChattingModalOpen(prevState => !prevState);
+  };
+
+  const fetchUnreadMessages = useCallback(async () => {
+    if (!userInfo.userNo) return; // 사용자 번호가 없으면 API 호출을 하지 않음
+    try {
+      const response = await fetch(`/api/chatting/totalUnReadMessage/${userInfo.userNo}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTotalUnreadMessages(data.totalUnreadMessages); // 안 읽은 메시지 수 상태 업데이트
+      } else {
+        console.error("Failed to fetch unread messages");
+      }
+    } catch (error) {
+      console.error("Error fetching unread messages:", error);
+    }
+  }, [userInfo.userNo]);
+
+  useEffect(() => {
+    if (userInfo.userNo) {
+      fetchUnreadMessages();
+    }
+  }, [userInfo.userNo, fetchUnreadMessages]);
+
+
   // 이제 userInfo를 직접 사용 가능
   // console.log(userInfo);
   // 카테고리를 기반으로 동적 메뉴 생성
@@ -85,6 +117,14 @@ const SidebarAndNavbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // 로그아웃 함수
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // 토큰 제거
+    setUserInfo({});
+    navigate("/main/empSite"); // 메인 페이지로 리다이렉트
+  };
+
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -100,8 +140,10 @@ const SidebarAndNavbar = () => {
               <p className="text-xs text-gray-500">{userInfo.role}</p>
             </div>
           </div>
-          <button className="relative hover:text-blue-400 transition-colors">
-            <LogOut className="w-6 h-6" />
+          <button className="relative hover:text-blue-400 transition-colors" onClick={handleLogout}>
+            <Link to="/main/empSite">
+              <LogOut className="w-6 h-6" />
+            </Link>
           </button>
           <button onClick={toggleSidebar} className="md:hidden">
             <FileText size={24} />
@@ -202,6 +244,11 @@ const SidebarAndNavbar = () => {
           <Outlet /> {/* URL에 따라 렌더링될 콘텐츠 */}
         </div>
       </main>
+      {isChattingModalOpen && (
+        <div className="inset-0 bg-opacity-50 w-2/5 h-40">
+          <Chatting />
+        </div>
+      )}
     </div>
   );
 };

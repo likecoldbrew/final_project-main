@@ -63,7 +63,7 @@ export default function Authority() {
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <h2
             className="text-lg p-3 bg-gradient-to-r from-red-500 to-yellow-500 text-white text-center">
-            승인 대기 목록
+            의사 권한 승인 대기 목록
           </h2>
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -128,7 +128,7 @@ export default function Authority() {
                     <button className="flex items-center px-2 py-1 rounded-md text-white bg-blue-500 hover:bg-blue-600"
                             onClick={() => handleApproveClick(item.userNo)}>
                       <Check className="mr-2 h-4 w-4" />
-                      의사 승인
+                      승인
                     </button>
                   </td>
                 </tr>

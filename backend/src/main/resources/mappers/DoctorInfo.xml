@@ -38,7 +38,7 @@
         JOIN medical_department md ON d.department = md.department_no
         JOIN medical_treatment mt ON FIND_IN_SET(mt.treatment_no, d.treatment) > 0
         WHERE
-        u.admin = 1 AND u.status = 'Y' AND u.user_name LIKE CONCAT('%', #{value}, '%')  <!-- 검색어 조건 추가 -->
+        u.admin = 1 AND u.status = 'N' AND u.user_name LIKE CONCAT('%', #{value}, '%')  <!-- 검색어 조건 추가 -->
         GROUP BY
         u.user_name, u.user_no
     </select>
@@ -54,14 +54,14 @@
                 JOIN doctors d ON u.user_no = d.doctor_no
                 JOIN medical_department md ON d.department = md.department_no
         WHERE
-            u.admin = 1 AND u.status = 'Y' AND md.department_no=#{departmentNo}
+            u.admin = 1 AND u.status = 'N' AND md.department_no=#{departmentNo}
         GROUP BY
             u.user_name, u.user_no
     </select>
 
 
     <!--  모든 진료과 검색   -->
-    <select id="getDepartments" parameterType="String" resultType="kr.or.nextit.backend.model.DoctorInfo">
+    <select id="getDepartments" resultType="kr.or.nextit.backend.model.DoctorInfo">
         SELECT
             md.department_name,
             GROUP_CONCAT(DISTINCT mt.treatment_name) AS treatments,
@@ -79,18 +79,19 @@
     <!-- 진료과 검색 -->
     <select id="searchDepartment" parameterType="String" resultType="kr.or.nextit.backend.model.DoctorInfo">
         SELECT
-        md.department_name,
-        GROUP_CONCAT(u.user_name) AS user_names,
-        GROUP_CONCAT(DISTINCT mt.treatment_name) AS treatments
+            md.department_name,
+            GROUP_CONCAT(DISTINCT u.user_name ORDER BY u.user_name) AS user_names,  -- user_name 중복 제거
+            GROUP_CONCAT(DISTINCT mt.treatment_name ORDER BY mt.treatment_name) AS treatments
         FROM
-        users u
-        JOIN doctors d ON u.user_no = d.doctor_no
-        JOIN medical_department md ON d.department = md.department_no
-        JOIN medical_treatment mt ON FIND_IN_SET(mt.treatment_no, d.treatment) > 0
+            users u
+                JOIN doctors d ON u.user_no = d.doctor_no
+                JOIN medical_department md ON d.department = md.department_no
+                JOIN medical_treatment mt ON FIND_IN_SET(mt.treatment_no, d.treatment) > 0
         WHERE
-        md.department_name LIKE CONCAT('%', #{value}, '%') AND u.status = 'Y'
+            md.department_name LIKE CONCAT('%', #{value}, '%')
+          AND u.status = 'N'
         GROUP BY
-        md.department_name;  <!-- 진료과명으로 그룹화 -->
+            md.department_name;
     </select>
 
     <!-- 모든 진료만 검색 -->

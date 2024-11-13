@@ -35,7 +35,6 @@ const CategoryContainer = () => {
   const { urlName, page, action } = useParams();
 
   // 디버깅을 위해 현재 매개변수를 콘솔에 출력
-  console.log("url이름", urlName);
   switch (urlName) {
     case "mediInfo":
       return <DoctorInfo />;

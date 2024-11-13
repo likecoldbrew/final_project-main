@@ -4,7 +4,7 @@ import QuickMenu from "../components/QuickMenu";
 import SubCategories from "../components/SubCategory";
 import ChatBot from "../components/ChatBot";
 import { useUser } from "../../utils/UserContext";
-
+import { format } from "date-fns";
 const HospitalizationDetail = ({ hospitalizationId }) => {
   const location = useLocation();
   const { selectCategory, selectSubCategory } = location.state || {};
@@ -15,20 +15,18 @@ const HospitalizationDetail = ({ hospitalizationId }) => {
     fetchHospitalizationDetail();
   }, [hospitalizationId]);
 
-  const formatDate = (timestamp) => {
-    return timestamp ? timestamp.slice(0, 10) : "";
-  };
 
   const fetchHospitalizationDetail = async () => {
+    console.log("dlkkn", hospitalizationId);
     try {
       const response = await fetch(`/api/hospitalization/detail/${hospitalizationId}`);
       const data = await response.json();
       if (data) {
         const formattedData = {
           ...data,
-          startDate: data.startDate ? formatDate(data.startDate) : "입원대기중",
-          dueDate: data.dueDate ? formatDate(data.dueDate) : "퇴원예정일 미정",
-          endDate: data.endDate ? formatDate(data.endDate) : "입원중"
+          startDate: data.startDate ? format(data.startDate, "yyyy-MM-dd") : "입원대기중",
+          dueDate: data.dueDate ? format(data.dueDate, "yyyy-MM-dd") : "퇴원예정일 미정",
+          endDate: data.endDate ? format(data.endDate,"yyyy-MM-dd") : "입원중"
         };
         setHospitalization(formattedData);
       }
@@ -110,7 +108,7 @@ const HospitalizationDetail = ({ hospitalizationId }) => {
           </div>
           <div className="flex justify-end items-center">
             <Link
-              to={`/prescript`} // 목록 페이지로 돌아가기
+              to={`/main/hospitalization`} // 목록 페이지로 돌아가기
               state={{ selectCategory, selectSubCategory }}
               className="text-sky-600 hover:underline mr-4"
             >
@@ -119,7 +117,7 @@ const HospitalizationDetail = ({ hospitalizationId }) => {
           </div>
         </main>
         <div className="flex flex-col space-y-4">
-        <QuickMenu />
+          <QuickMenu />
           <ChatBot />
         </div>
       </div>

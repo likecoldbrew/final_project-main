@@ -72,7 +72,7 @@ const PrescriptionsDetail = ({ prescriptionId }) => {
           </div>
           <div className="flex justify-end items-center">
             <Link
-              to={`/prescript`} // 목록 페이지로 돌아가기
+              to={`/main/prescript`} // 목록 페이지로 돌아가기
               state={{ selectCategory, selectSubCategory }}
               className="text-sky-600 hover:underline mr-4"
             >

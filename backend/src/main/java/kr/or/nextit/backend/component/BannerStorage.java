@@ -27,21 +27,33 @@ public class BannerStorage {
         return bannerPath;
     }
 
-    // 배너 서버에 저장
     public String storeBanner(MultipartFile banner) {
-        String uploadPath = getUploadDir();
-        String randomBannerName = UUID.randomUUID().toString(); // UUID를 사용하여 랜덤한 배너 이름 생성
-        String bannerName = randomBannerName + "_" + banner.getOriginalFilename();
+        String baseDir = System.getProperty("user.dir");  // 현재 애플리케이션의 실행 디렉토리
+//        String uploadDir = baseDir + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "static" + File.separator + "uploads" + File.separator + "banner";
 
-        Path path = Paths.get(uploadPath + "/" + bannerName);
+        String uploadDir = baseDir + File.separator + "src" + File.separator + "main" + File.separator + "resources"
+                + File.separator + "static" + File.separator + "images";
+        // 디렉토리가 존재하지 않으면 생성
+        File directory = new File(uploadDir);
+
+        if (!directory.exists()) {
+            boolean created = directory.mkdirs();
+            if (!created) {
+                throw new RuntimeException("업로드 디렉토리 생성 실패: " + uploadDir);
+            }
+        }
+        String randomBannerName = UUID.randomUUID().toString();
+        String bannerName = "6a68d306-bef9-44ff-8723-33aa5c1a9399_8_다양.png";
+
+        Path path = Paths.get(uploadDir + File.separator + bannerName);
 
         try {
             // 배너을 지정한 경로에 저장
             banner.transferTo(path.toFile());
         } catch (IOException e) {
-            throw new RuntimeException("배너 저장에 실패했습니다: " + e.getMessage());
+
         }
-        return bannerName; // 저장된 배너의 랜덤 이름 반환
+        return bannerName;
     }
 
     // 배너 서버에서 삭제

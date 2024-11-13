@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { Calendar, Coffee, Edit, Layers, LogOut, Mail, Meh, Settings, Smile, Users } from "react-feather";
-import { Bell, Menu, MessageSquare } from "lucide-react";
+import { Calendar, Coffee, Edit, Layers, LogOut, Meh, Settings, Smile, Users } from "react-feather";
+import { Menu, MessageSquare } from "lucide-react";
 import { Home, KeyboardArrowDown } from "@mui/icons-material";
 import { useUser } from "../../utils/UserContext";
 import { useCategoryContext } from "../../utils/CategoryContext";
+import Chatting from "../../components/Chatting";
 
 const icons = {
   "list": <Users size={20} />, // 회원 관리
@@ -25,6 +26,8 @@ const SidebarAndNavbar = () => {
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
   const [activeDropdowns, setActiveDropdowns] = useState([]); // 배열로 변경
   const [activeMenuItem, setActiveMenuItem] = useState(null); // 현재 선택된 메뉴 항목 상태
+  const [totalUnreadMessages, setTotalUnreadMessages] = useState(0); // 안 읽은 채팅 총 계수
+  const [isChattingModalOpen, setIsChattingModalOpen] = useState(false);
 
   // API 호출
   const fetchCategory = useCallback(async () => {
@@ -142,8 +145,38 @@ const SidebarAndNavbar = () => {
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
+
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+
     alert("로그아웃되었습니다.");
   }, []);
+
+  const toggleChattingModal = () => {
+    setIsChattingModalOpen(prevState => !prevState);
+  };
+
+  const fetchUnreadMessages = useCallback(async () => {
+    if (!userInfo.userNo) return; // 사용자 번호가 없으면 API 호출을 하지 않음
+
+    try {
+      const response = await fetch(`/api/chatting/totalUnReadMessage/${userInfo.userNo}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTotalUnreadMessages(data.totalUnreadMessages); // 안 읽은 메시지 수 상태 업데이트
+      } else {
+        console.error("Failed to fetch unread messages");
+      }
+    } catch (error) {
+      console.error("Error fetching unread messages:", error);
+    }
+  }, [userInfo.userNo]);
+
+  useEffect(() => {
+    if (userInfo.userNo) {
+      fetchUnreadMessages();
+    }
+  }, [userInfo.userNo, fetchUnreadMessages]);
+
 
   return (
     <div className="flex min-h-screen">
@@ -174,14 +207,14 @@ const SidebarAndNavbar = () => {
                   )}
                 </>
               ) : (
-                <Link to="/login" className="text-lg font-semibold text-gray-800">Login</Link>
+                <Link to="/main/empSite" className="text-lg font-semibold text-gray-800">Login</Link>
               )}
             </div>
           </div>
           {/* 유저 정보가 있을 때만 로그아웃 버튼 표시 */}
           {userInfo.userNo && (
             <button className="relative hover:text-blue-400 transition-colors" onClick={handleLogout}>
-              <Link to="/login">
+              <Link to="/main/empSite">
                 <LogOut className="w-6 h-6" />
               </Link>
             </button>
@@ -273,8 +306,15 @@ const SidebarAndNavbar = () => {
                   <Home className="w-6 h-6" />
                 </Link>
               </button>
-              <button className="relative hover:text-yellow-300 transition-colors">
+              <button className="relative hover:text-yellow-300 transition-colors" onClick={toggleChattingModal}>
                 <MessageSquare className="w-6 h-6" />
+                {/* 안읽은 메시지 배지 */}
+                {totalUnreadMessages > 0 && (
+                  <span
+                    className="absolute bottom-3 left-3 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {totalUnreadMessages}
+                </span>
+                )}
               </button>
               <button onClick={toggleSidebar}>
                 <Menu className=" relative hover:text-yellow-300 w-6 h-6" />
@@ -288,6 +328,11 @@ const SidebarAndNavbar = () => {
           <Outlet />
         </div>
       </main>
+      {isChattingModalOpen && (
+        <div className="inset-0 bg-opacity-50 w-2/5 h-40">
+          <Chatting />
+        </div>
+      )}
     </div>
   );
 };

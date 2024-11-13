@@ -139,9 +139,9 @@ const Header = () => {
               </div>
               <nav
                 className="flex justify-around mt-6 space-x-2 sm:space-x-4 md:space-x-6 lg:space-x-8 pr-10 pt-2 w-full flex-grow">
-                {categories.map((category) => (
+                {categories.map((category, index) => (
                   <div
-                    key={category.id} // category의 고유 ID 사용
+                    key={`${index}-${category.id}`} // category의 고유 ID 사용
                     className="relative"
                     onMouseEnter={() => setHoveredCategory(category.name)}
                   >

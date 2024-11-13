@@ -110,7 +110,7 @@ const Notification = () => {
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber) => {
     // 페이지 번호와 함께 selectCategory와 selectSubCategory를 state로 전달
-    navigate(`main/notice/page/${pageNumber}`, {
+    navigate(`/main/notice/page/${pageNumber}`, {
       state: { selectCategory, selectSubCategory }
     });
   };

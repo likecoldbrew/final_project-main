@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import QuickMenu from "../components/QuickMenu";
 import SubCategories from "../components/SubCategory";
 import ChatBot from "../components/ChatBot";
+import { useUser } from "../../utils/UserContext";
 import AlertModal from "../components/AlertModal";
 import Post from "../components/Post";
 
@@ -10,7 +11,6 @@ import Post from "../components/Post";
 const UserMyPage = () => {
     const location = useLocation();
     const { selectCategory, selectSubCategory } = location.state || {};
-    // const { userInfo, isLoading } = useUser(); //유저 정보
     const [formData, setFormData] = useState({
       userId: "",
       userPass: "",
@@ -41,59 +41,61 @@ const UserMyPage = () => {
     const [postModalOpen, setPostModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     const [modalButtonText, setModalButtonText] = useState("확인");
-    const [modalRedirectPath, setRedirectPath] = useState("/");
+    const [modalRedirectPath, setRedirectPath] = useState("/main");
     const [isSuccess, setIsSuccess] = useState(false);
 
-    /* 시작점 */
-    const [userInfo, setUserInfo] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+  /* 시작점 */
+  const [userInfo, setUserInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const fetchUserInfo = async () => {
-      const token = localStorage.getItem("token"); // JWT를 로컬 스토리지에서 가져옴
-      if (token) {
-        try {
-          const response = await fetch("/api/users/me", {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${token}` // JWT 포함
-            }
-          });
-
-          console.log(response.ok)
-          if (response.ok) {
-            const data = await response.json(); // 서버에서 반환하는 사용자 정보
-            setIsLoading(true); //로그인 상태 확인용
-            setUserInfo(data); // 사용자 정보 상태 업데이트
-
-            fetchUsers(data); //사용자정보조회
-          } else {
-            console.error("사용자 정보를 가져오는 데 실패했습니다.");
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("token"); // JWT를 로컬 스토리지에서 가져옴
+    if (token) {
+      try {
+        const response = await fetch("/api/users/me", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}` // JWT 포함
           }
-        } catch (error) {
-          console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+        });
+        console.log(response.ok)
+        if (response.ok) {
+          const data = await response.json(); // 서버에서 반환하는 사용자 정보
+          setIsLoading(true); //로그인 상태 확인용
+          setUserInfo(data); // 사용자 정보 상태 업데이트
+          fetchUsers(data); //사용자정보조회
+        } else {
+          console.error("사용자 정보를 가져오는 데 실패했습니다.");
         }
-      }else{
-        setModalMessage("로그인 후 이용가능합니다.");
-        setModalButtonText("로그인 하기");
-        setAlertModalOpen(true);
-        setIsSuccess(false); // isSuccess 상태 업데이트
-        setRedirectPath("/main/login"); // 로그인페이지로 보내기
+      } catch (error) {
+        console.error("사용자 정보를 가져오는 중 오류 발생:", error);
       }
-    };
+    }else{
+      setModalMessage("로그인 후 이용가능합니다.");
+      setModalButtonText("로그인 하기");
+      setAlertModalOpen(true);
+      setIsSuccess(false); // isSuccess 상태 업데이트
+      setRedirectPath("/main/login"); // 로그인페이지로 보내기
+    }
+  };
 
-    useEffect(()=>{
-      fetchUserInfo()
-    },[])
-    /* 종료점 */
+  useEffect(()=>{
+    fetchUserInfo()
+  },[])
+  /* 종료점 */
+  useEffect(()=>{
+    fetchUsers()
+  },[isLoading])
+  /* 종료점 */
 
     //로그인 한 유저 정보 가져오기
-    const fetchUsers = async (param) => {
-      console.log(param)
+    const fetchUsers = async () => {
       try {
         const response = await fetch(`/api/users/patients`);
         const data = await response.json();
         // 로그인한 유저의 ID와 일치하는 환자 정보 필터링
-        const loginUser = data.find(patient => patient.userId === param.userId);
+        const loginUser = data.find(patient => patient.userId === userInfo.userId);
+        console.log("확인",loginUser)
         if (loginUser) {
           setFormData({
               userId: loginUser.userId,
@@ -217,7 +219,7 @@ const UserMyPage = () => {
           setModalMessage("변경사항이 없습니다.");
           setModalButtonText("마이페이지 가기");
           setAlertModalOpen(true);
-          setRedirectPath("/mypage");
+          setRedirectPath("/main/mypage");
         }
         return;
       }
@@ -234,7 +236,7 @@ const UserMyPage = () => {
           newPassword: newPassword,
           ...(formData.userPass && { userPass: formData.userPass })
         };
-        const response = await fetch(`/api/users/update/${userInfo.userNo}`, {
+        const response = await fetch(`/api/users/updateUser/${userInfo.userNo}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -248,7 +250,7 @@ const UserMyPage = () => {
           setModalButtonText("마이페이지 가기");
           setAlertModalOpen(true);
           setIsSuccess(true);
-          setRedirectPath("/mypage"); // Redirect after success
+          setRedirectPath("/main/mypage"); // Redirect after success
         } else {
           const errorData = await response.json();
           setModalMessage(errorData.message || "변경 중 오류가 발생했습니다.");

@@ -21,7 +21,7 @@ const InquiriesRegist = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalButtonText, setModalButtonText] = useState("확인");
-  const [modalRedirectPath, setRedirectPath] = useState("/");
+  const [modalRedirectPath, setRedirectPath] = useState("/main");
   const [isSuccess, setIsSuccess] = useState(false);
 
   //질문 등록
@@ -34,7 +34,7 @@ const InquiriesRegist = () => {
       setModalButtonText("로그인 하기");
       setModalOpen(true);
       setIsSuccess(false); // isSuccess 상태 업데이트
-      setRedirectPath("/login"); // 로그인페이지로 보내기
+      setRedirectPath("/main/login"); // 로그인페이지로 보내기
       return;
     }
 
@@ -56,7 +56,7 @@ const InquiriesRegist = () => {
         setModalButtonText("1대1 문의 페이지로 이동");
         setModalOpen(true);
         setIsSuccess(true); // isSuccess 상태 업데이트
-        setRedirectPath("/inquiry");
+        setRedirectPath("/main/inquiry");
       } else {
         // 에러 처리
         const errorText = await response.text(); // 에러 메시지 받아오기
@@ -165,7 +165,7 @@ const InquiriesRegist = () => {
             </div>
             <div className="flex justify-end items-center">
               <Link
-                to={`/inquiry`} // 목록 페이지로 돌아가기
+                to={`/main/inquiry`} // 목록 페이지로 돌아가기
                 state={{ selectCategory, selectSubCategory }}
                 className="text-sky-600 hover:underline mr-4"
               >

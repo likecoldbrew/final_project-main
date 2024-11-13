@@ -3,6 +3,7 @@ import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import QuickMenu from "../components/QuickMenu";
 import SubCategories from "../components/SubCategory";
 import ChatBot from "../components/ChatBot";
+import { format } from "date-fns";
 
 const InquiriesDetail = ({ inquirieId }) => {
   const location = useLocation();
@@ -15,9 +16,7 @@ const InquiriesDetail = ({ inquirieId }) => {
     fetchBoardDetail();
   }, [inquirieId]);
 
-  const formatDate = (timestamp) => {
-    return timestamp ? timestamp.slice(0, 10) : "";
-  };
+
 
   const fetchBoardDetail = async () => {
     try {
@@ -26,8 +25,8 @@ const InquiriesDetail = ({ inquirieId }) => {
       if (!data.isEmpty) {
         const formattedData = {
           ...data,
-          createAt: formatDate(data.createAt),
-          adminCreateAt: formatDate(data.adminCreateAt),
+          createAt: format(data.createAt, "yyyy-MM-dd"),
+          adminCreateAt: format(data.adminCreateAt, "yyyy-MM-dd"),
         };
         setBoard(formattedData);
       } else {
@@ -67,7 +66,7 @@ const InquiriesDetail = ({ inquirieId }) => {
       });
 
       if (response.ok) {
-        navigate(`/inquiry`, { state: { selectCategory, selectSubCategory } }); // 목록 페이지로 리다이렉트
+        navigate(`./main/inquiry`, { state: { selectCategory, selectSubCategory } }); // 목록 페이지로 리다이렉트
       } else {
         console.error("게시글 삭제에 실패했습니다.");
       }
@@ -110,7 +109,7 @@ const InquiriesDetail = ({ inquirieId }) => {
           </div>
           <div className="flex justify-end items-center">
             <Link
-              to={`/inquiry`} // 목록 페이지로 돌아가기
+              to={`/main/inquiry`} // 목록 페이지로 돌아가기
               state={{ selectCategory, selectSubCategory }}
               className="text-sky-600 hover:underline mr-4"
             >

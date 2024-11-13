@@ -55,7 +55,7 @@ const PaymentModal = ({
               setModalMessage("결제 검증 성공");
               setModalButtonText("다운로드 하러 가기");
               setAlertModalOpen(true);
-              setRedirectPath("/applicationHistory");
+              setRedirectPath("/main/applicationHistory");
               await handlePaymentSuccess();
             } catch (error) {
               console.error("결제 검증 실패:", error);
@@ -66,7 +66,7 @@ const PaymentModal = ({
             setModalMessage("결제를 취소하였습니다.");
             setModalButtonText("신청 내역 페이지로 이동");
             setAlertModalOpen(true);
-            setRedirectPath("/applicationHistory");
+            setRedirectPath("/main/applicationHistory");
             console.log(rsp);
           }
         }
@@ -79,7 +79,7 @@ const PaymentModal = ({
     setModalMessage("결제를 취소하셨습니다.");
     setModalButtonText("확인");
     setAlertModalOpen(true);
-    setRedirectPath("/applicationHistory");
+    setRedirectPath("/main/applicationHistory");
   };
 
 

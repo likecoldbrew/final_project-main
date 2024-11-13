@@ -22,8 +22,6 @@ const OnlineReserve = () => {
   const today = new Date().toISOString().split("T")[0];
   //유저 확인 여부
   const [userCheck, setUserCheck] = useState(false);
-  //유저정보
-  const { userInfo, isLoading } = useUser();
   // AlertModal 상태 관리
   const [alertModalOpen, setAlertModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -52,19 +50,47 @@ const OnlineReserve = () => {
     symptom: ""
   });
 
-  useEffect(() => {
-    // 화면 로딩시 로그인 체크
-    if (!isLoading && !userInfo.userId) {
-      setModalMessage("로그인 후 이용 가능합니다.");
+  /* 시작점 */
+  const [userInfo, setUserInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("token"); // JWT를 로컬 스토리지에서 가져옴
+    if (token) {
+      try {
+        const response = await fetch("/api/users/me", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}` // JWT 포함
+          }
+        });
+
+        console.log(response.ok)
+        if (response.ok) {
+          const data = await response.json(); // 서버에서 반환하는 사용자 정보
+          setIsLoading(true); //로그인 상태 확인용
+          setUserInfo(data); // 사용자 정보 상태 업데이트
+          fetchUsers(data); //사용자정보조회
+        } else {
+          console.error("사용자 정보를 가져오는 데 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+      }
+    }else{
+      setModalMessage("로그인 후 이용가능합니다.");
       setModalButtonText("로그인 하기");
       setAlertModalOpen(true);
       setIsSuccess(false); // isSuccess 상태 업데이트
-      setRedirectPath("/main/login"); // 로그인 페이지로 보내기
-    } else {
-      window.scrollTo(0, 0);
+      setRedirectPath("/main/login"); // 로그인페이지로 보내기
     }
-    fetchDepartments();
-  }, [isLoading, userInfo]);
+  };
+
+  useEffect(()=>{
+    fetchUserInfo()
+    fetchDepartments()
+  },[])
+  /* 종료점 */
 
   useEffect(() => {
     fetchDoctors(); // departmentNo가 변경될 때만
@@ -101,27 +127,34 @@ const OnlineReserve = () => {
 
   //유효성 검사
   const validate = (e) => {
+    let isValid = true;
     //유저확인
     if(!userCheck){
       setErrMsg(prev => ({ ...prev, userName: "본인 확인은 필수 입니다." }));
       setErrMsg(prev => ({ ...prev, rrn: "주민번호는 필수 입니다." }));
+      isValid = false;
     }
     //진료과 확인
     if (!userInfoData.departmentNo) {
       setErrMsg(prev => ({ ...prev, departmentNo: "진료과 선택은 필수 입니다." }));
+      isValid = false;
     }
     //담당의 확인
     if (!userInfoData.doctorNo) {
       setErrMsg(prev => ({ ...prev, doctorNo: "의사 선택은 필수 입니다." }));
+      isValid = false;
     }
     //예약일 화인
     if (!userInfoData.reserveTime) {
       setErrMsg(prev => ({ ...prev, reserveTime: "예약일 선택은 필수입니다." }));
+      isValid = false;
     }
     //증상 확인
     if (!userInfoData.symptom) {
       setErrMsg(prev => ({ ...prev, symptom: "증상 입력은 필수입니다." }));
+      isValid = false;
     }
+    return isValid;
   };
 
 
@@ -209,11 +242,12 @@ const OnlineReserve = () => {
   };
 
   // 전송
+
   const goReserve = async (e) => {
     e.preventDefault();
     //유효성 체크
     if (!validate()) {
-      return; // 유효성 검사에 실패하면 API 호출하지 않고 종료
+      return;
     }
     //정보담기
     const reserveData = {
@@ -428,7 +462,7 @@ const OnlineReserve = () => {
                     </p>)}
                   </div>
                   <div className="flex justify-end">
-                    {userInfo.userId ? (
+                    {userInfo ? (
                       <button
                         type="submit"
                         onClick={goReserve}

@@ -48,14 +48,14 @@
                                                                               FROM users
                                                                               WHERE admin = 1 </select>
     <!--  유저 추가  -->
-    <insert id="insertUser" parameterType="kr.or.nextit.backend.model.User"> INSERT INTO users (user_id, user_pass,
-                                                                                                user_name, user_rrn,
-                                                                                                email, phone, user_add,
-                                                                                                user_add2)
-                                                                             VALUES (#{userId}, #{userPass},
-                                                                                     #{userName}, #{userRrn}, #{email},
-                                                                                     #{phone}, #{userAdd},
-                                                                                     #{userAdd2}) </insert>
+    <insert id="insertUser" parameterType="kr.or.nextit.backend.model.User" useGeneratedKeys="true" keyColumn="user_no" keyProperty="userNo"> INSERT INTO users (user_id, user_pass,
+                                                                                                                                                                 user_name, user_rrn,
+                                                                                                                                                                 email, phone, user_add,
+                                                                                                                                                                 user_add2)
+                                                                                                                                              VALUES (#{userId}, #{userPass},
+                                                                                                                                                      #{userName}, #{userRrn}, #{email},
+                                                                                                                                                      #{phone}, #{userAdd},
+                                                                                                                                                      #{userAdd2}) </insert>
     <!--  유저 수정  -->
     <update id="updateUser" parameterType="kr.or.nextit.backend.model.User">
         UPDATE users SET user_id = #{userId}, user_name = #{userName}, user_rrn = #{userRrn}, email = #{email}, phone =

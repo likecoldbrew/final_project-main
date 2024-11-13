@@ -14,7 +14,6 @@ const MyHospitalization = () => {
   const [hospitalization, setHospitalization] = useState([]); // 예약정보 가져오기
   const [currentPage, setCurrentPage] = useState(Number(page) || 1); // URL에서 페이지 번호 설정
   const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate
-  const { userInfo, isLoading } = useUser(); //유저 정보
 // AlertModal 상태 관리
   const [alertModalOpen, setAlertModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -22,18 +21,46 @@ const MyHospitalization = () => {
   const [modalRedirectPath, setRedirectPath] = useState("/");
   const [isSuccess, setIsSuccess] = useState(false);
   //로그인 안하면 접근 못하게 막기
-  useEffect(() => {
-    if (!isLoading && !userInfo.userId) {
+  /* 시작점 */
+  const [userInfo, setUserInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("token"); // JWT를 로컬 스토리지에서 가져옴
+    if (token) {
+      try {
+        const response = await fetch("/api/users/me", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}` // JWT 포함
+          }
+        });
+
+        console.log(response.ok)
+        if (response.ok) {
+          const data = await response.json(); // 서버에서 반환하는 사용자 정보
+          setIsLoading(true); //로그인 상태 확인용
+          setUserInfo(data); // 사용자 정보 상태 업데이트
+          fetchHospitalization(data)
+        } else {
+          console.error("사용자 정보를 가져오는 데 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+      }
+    }else{
       setModalMessage("로그인 후 이용가능합니다.");
       setModalButtonText("로그인 하기");
       setAlertModalOpen(true);
       setIsSuccess(false); // isSuccess 상태 업데이트
       setRedirectPath("/main/login"); // 로그인페이지로 보내기
-    } else {
-      window.scrollTo(0, 0);
     }
-    fetchHospitalization();
-  }, [isLoading, userInfo]);
+  };
+
+  useEffect(()=>{
+    fetchUserInfo()
+  },[])
+  /* 종료점 */
 
   // URL에서 page가 변경될 때 currentPage 업데이트
   useEffect(() => {
@@ -42,7 +69,7 @@ const MyHospitalization = () => {
 
 
   // 예약 내역
-  const fetchHospitalization = async () => {
+  const fetchHospitalization = async (userInfo) => {
     try {
       const response = await fetch(`/api/hospitalization/${userInfo.userNo}`);
       const data = await response.json();

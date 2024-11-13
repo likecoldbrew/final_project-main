@@ -112,7 +112,7 @@ const Community = () => {
 
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber) => {
-    navigate(`/community/page/${pageNumber}`, {
+    navigate(`/main/community/page/${pageNumber}`, {
       state: { selectCategory, selectSubCategory }
     });
   };
@@ -231,7 +231,7 @@ const Community = () => {
                       </td>
                       <td className="px-4 py-2 text-center h-12">
                         <Link
-                          to={`/community/detail/${board.boardId}`} // 제목 클릭 시 이동할 경로
+                          to={`/main/community/detail/${board.boardId}`} // 제목 클릭 시 이동할 경로
                           state={{ selectCategory, selectSubCategory }} // 카테고리 값 넘겨주기
                           onClick={() => {
                             updateViews(board.boardId, board.userId); // 조회수 업데이트 API로 boardId, userId 넘겨줌
@@ -268,7 +268,7 @@ const Community = () => {
               {userInfo.userId ? (
                 <>
                   <Link
-                    to={`/board/register`}
+                    to={`/main/board/register`}
                     state={{ selectCategory, selectSubCategory }}
                     className="text-sky-600 hover:underline mr-4"
                   >

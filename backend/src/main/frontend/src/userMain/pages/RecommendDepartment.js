@@ -64,7 +64,7 @@ const RecommendDepartment = () => {
             <>
               해당 증상은 "<span className="font-bold text-blue-400">{data[0]}</span>"를 방문하시는 것이 좋습니다.
               <div className="mt-4">
-                <Link to="/mediReserve" className="text-blue-500 hover:underline ml-2">> 예약하러 가기</Link>
+                <Link to="/main/mediReserve" className="text-blue-500 hover:underline ml-2">> 예약하러 가기</Link>
               </div>
             </>
           );
@@ -77,7 +77,7 @@ const RecommendDepartment = () => {
               <>
                 해당 증상들을 종합해봤을 때 "<span className="font-bold text-blue-400">{lastResult}</span>"가 적합한 것 같습니다.
                 <div className="mt-4">
-                  <Link to="/mediReserve" className="text-blue-500 hover:underline ml-2">예약하러 가기</Link>
+                  <Link to="/main/mediReserve" className="text-blue-500 hover:underline ml-2">예약하러 가기</Link>
                 </div>
               </>
             );

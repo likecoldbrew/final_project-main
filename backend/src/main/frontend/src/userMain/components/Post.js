@@ -30,14 +30,14 @@ const Post = (props) => {
     zIndex: 1000
   };
   return (
-    <div className="modal-overlay relative">
+    <div className="modal-overlay">
       <button
         onClick={props.onClose}
         className="close-button text-sky-600 font-bold hover:text-rose-700"
         style={{
           position: "absolute",
           top: "150px",
-          left: "60%",
+          left: "58%",
           width: "3%",
           transform: "translateX(-10%)",
           backgroundColor: "white",

@@ -66,8 +66,6 @@
             c.purpose,
             c.reference_id,
             d.user_name AS doctor_name,
-            h.room_type,
-            h.seat_no,
             h.disease_name,
             h.start_date,
             h.due_date,

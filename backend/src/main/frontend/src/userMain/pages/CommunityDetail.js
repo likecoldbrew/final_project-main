@@ -78,7 +78,7 @@ const BoardDetail = ({ boardId }) => {
         }
       });
       if (response.ok) {
-        navigate(`/community`, { state: { selectCategory, selectSubCategory } });
+        navigate(`/main/community`, { state: { selectCategory, selectSubCategory } });
       } else {
         console.error("게시글 삭제에 실패했습니다.");
       }
@@ -195,7 +195,7 @@ const BoardDetail = ({ boardId }) => {
           </div>
           <div className="flex justify-end items-center">
             <Link
-              to={`/community/1`} // 목록 페이지로 돌아가기
+              to={`/main/community/1`} // 목록 페이지로 돌아가기
               state={{ selectCategory, selectSubCategory }}
               className="text-sky-600 hover:underline mr-4"
             >
@@ -209,7 +209,7 @@ const BoardDetail = ({ boardId }) => {
                 </button>
 
                 <Link
-                  to={`/board/update/${boardId}`}
+                  to={`/main/board/update/${boardId}`}
                   state={{ selectCategory, selectSubCategory }}
                   className="text-sky-600 hover:underline mr-4"
                 >

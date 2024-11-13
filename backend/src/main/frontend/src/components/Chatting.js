@@ -567,7 +567,7 @@ const Chatting = () => {
     const filteredInviteUsers = inviteUsers.filter(user => user.userName !== userInfo.userName);
 
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 zIndex:1000">
         <div className="bg-white p-4 rounded-lg shadow-lg">
           <h2 className="text-lg mb-2 font-semibold">
             {modalType === "create" ? "새 방 만들기" : "초대할 사용자 선택"}

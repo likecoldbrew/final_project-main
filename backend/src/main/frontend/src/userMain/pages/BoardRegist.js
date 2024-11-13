@@ -20,9 +20,8 @@ const BoardRegist = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalButtonText, setModalButtonText] = useState("확인");
-  const [modalRedirectPath, setRedirectPath] = useState("/");
+  const [modalRedirectPath, setRedirectPath] = useState("/main");
   const [isSuccess, setIsSuccess] = useState(false);
-  const {userInfo, isLoading}=useUser() //유저 정보
 
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files);
@@ -33,18 +32,47 @@ const BoardRegist = () => {
     setFilePreviews(previews);
   };
 
-  useEffect(() => {
-    // 화면 로딩시 로그인 체크
-    if (!isLoading && !userInfo.userId) {
-      setModalMessage("로그인 후 이용 가능합니다.");
+  /* 시작점 */
+  const [userInfo, setUserInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("token"); // JWT를 로컬 스토리지에서 가져옴
+    if (token) {
+      try {
+        const response = await fetch("/api/users/me", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}` // JWT 포함
+          }
+        });
+
+        console.log(response.ok)
+        if (response.ok) {
+          const data = await response.json(); // 서버에서 반환하는 사용자 정보
+          setIsLoading(true); //로그인 상태 확인용
+          setUserInfo(data); // 사용자 정보 상태 업데이트
+
+          fetchUsers(data); //사용자정보조회
+        } else {
+          console.error("사용자 정보를 가져오는 데 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+      }
+    }else{
+      setModalMessage("로그인 후 이용가능합니다.");
       setModalButtonText("로그인 하기");
-      setModalOpen(true);
+      setAlertModalOpen(true);
       setIsSuccess(false); // isSuccess 상태 업데이트
-      setRedirectPath("/login"); // 로그인 페이지로 보내기
-    } else {
-      window.scrollTo(0, 0);
+      setRedirectPath("/main/login"); // 로그인페이지로 보내기
     }
-  }, [isLoading, userInfo]);
+  };
+
+  useEffect(()=>{
+    fetchUserInfo()
+  },[])
+  /* 종료점 */
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -54,7 +82,7 @@ const BoardRegist = () => {
       setModalButtonText("확인");
       setModalOpen(true);
       setIsSuccess(false); // isSuccess 상태 업데이트
-      setRedirectPath("/board/register");
+      setRedirectPath("/main/board/register");
       setLoading(false);
       return
     }
@@ -83,7 +111,7 @@ const BoardRegist = () => {
         setModalButtonText("게시판으로 이동");
         setModalOpen(true);
         setIsSuccess(true); // isSuccess 상태 업데이트
-        setRedirectPath("/community");
+        setRedirectPath("/main/community");
       } else {
         // 에러 처리
         const errorText = await response.text(); // 에러 메시지 받아오기
@@ -104,7 +132,7 @@ const BoardRegist = () => {
     setModalOpen(false);
     // isSuccess가 true일 경우에만 navigate 실행
     if (isSuccess) {
-      navigate("/community", {
+      navigate("/main/community", {
         state: {
           selectCategory,
           selectSubCategory
@@ -191,7 +219,7 @@ const BoardRegist = () => {
             )}
             <div className="flex justify-end items-center">
               <Link
-                to={`/community/1`} // 목록 페이지로 돌아가기
+                to={`/main/community/1`} // 목록 페이지로 돌아가기
                 state={{ selectCategory, selectSubCategory }}
                 className="text-sky-600 hover:underline mr-4"
               >

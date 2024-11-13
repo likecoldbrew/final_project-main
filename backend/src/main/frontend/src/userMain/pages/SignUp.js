@@ -14,7 +14,7 @@ export default function SignUpPage() {
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalButtonText, setModalButtonText] = useState("확인");
-  const [modalRedirectPath, setRedirectPath] = useState("/main");
+  const [modalRedirectPath, setRedirectPath] = useState("/");
   const [isSuccess, setIsSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -26,7 +26,7 @@ export default function SignUpPage() {
     rrn2: "",
     add: "",
     add2: "",
-    phone: "",
+    userPhone: "",
     email: ""
   });
 
@@ -34,9 +34,9 @@ export default function SignUpPage() {
     id: "",
     password: "",
     confirmPassword: "",
-    name: "",
+    userName: "",
     rrn: "",
-    phone: "",
+    userPhone: "",
     email: ""
   });
 
@@ -62,10 +62,27 @@ export default function SignUpPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value
-    }));
+    if (name === "userPhone") {
+      // 숫자만 남기기
+      const onlyNums = value.replace(/\D/g, "");
+      const formatteduserPhone = onlyNums
+        .slice(0, 11)
+        .replace(/(\d{3})(\d{4})(\d{0,4})/, (_, p1, p2, p3) => p3 ? `${p1}-${p2}-${p3}` : `${p1}-${p2}`);
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        [name]: formatteduserPhone
+      }));
+    } else {
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        [name]: value  // name에 해당하는 필드 업데이트
+      }));
+    }
+    //주민번호 앞자리 입력하면 바로 다음칸으로 이동하게 설정
+    if (name === "rrn1" && value.length === 6) {
+      document.getElementById("rrn2").focus();
+    }
+    
     // 형식 맞으면 오류메세지 초기화
     setErrorMessages((prevState) => ({
       ...prevState,
@@ -76,7 +93,6 @@ export default function SignUpPage() {
   // Post 컴포넌트에서 받은 주소를 처리하는 함수
   const handleAddressComplete = (data) => {
     const fullAddress = data.address;
-    console.log("주소가 잘 들어오나", fullAddress)
     //상세주소가 괄호로 들어옴. -> 괄호 지우기
     const userAddress = fullAddress.replace(/[()]/g, "").trim();
     setFormData(prevFormData => ({
@@ -89,7 +105,6 @@ export default function SignUpPage() {
 
   const validateForm = () => {
     const newErrors = {};
-
     // Validate ID (아이디)
     const idRegex = /^[A-Za-z0-9]+$/;
     if (!formData.id) {
@@ -97,7 +112,6 @@ export default function SignUpPage() {
     } else if (!idRegex.test(formData.id)) {
       newErrors.id = "아이디는 영문과 숫자만 사용할 수 있습니다.";
     }
-
     // Validate Password (비밀번호)
     const passwordRegex =
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -109,15 +123,13 @@ export default function SignUpPage() {
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
     }
-
     // Validate Name (이름)
     const nameRegex = /^[가-힣A-Za-z]+$/;
-    if (!formData.name) {
-      newErrors.name = "이름은 필수 입력입니다.";
-    } else if (!nameRegex.test(formData.name)) {
-      newErrors.name = "이름은 한글과 영문만 사용할 수 있습니다.";
+    if (!formData.userName) {
+      newErrors.userName = "이름은 필수 입력입니다.";
+    } else if (!nameRegex.test(formData.userName)) {
+      newErrors.userName = "이름은 한글과 영문만 사용할 수 있습니다.";
     }
-
     // Validate Resident Registration Number (주민등록번호)
     const rrnRegex = /^(?![0]{6})[0-9]{6}-[0-9]{7}$/; // Format validation
     if (!formData.rrn1 || !formData.rrn2) {
@@ -133,8 +145,6 @@ export default function SignUpPage() {
       const day = parseInt(formData.rrn1.substring(4, 6));
       const gender = formData.rrn2[0];
       const yearPrefix = gender === "1" || gender === "2" ? 1900 : 2000;
-
-      // Validate the birth date
       const birthDate = new Date(yearPrefix + year, month - 1, day);
       if (
         birthDate.getFullYear() !== yearPrefix + year ||
@@ -144,15 +154,11 @@ export default function SignUpPage() {
         newErrors.rrn = "주민등록번호에 올바른 날짜가 아닙니다.";
       }
     }
-
-    // Validate Phone Number (전화번호)
-    const phoneRegex = /^010\d{8}$/; // Must start with 010 and have 11 digits total
-    if (!formData.phone) {
-      newErrors.phone = "전화번호는 필수 입력입니다.";
-    } else if (!phoneRegex.test(formData.phone)) {
-      newErrors.phone = "전화번호는 010으로 시작하며, 총 11자리여야 합니다.";
+    // Validate userPhone Number (전화번호)
+    const userPhoneRegex = /^010\d{8}$/; // Must start with 010 and have 11 digits total
+    if (!formData.userPhone) {
+      newErrors.userPhone = "전화번호는 필수 입력입니다.";
     }
-
     // Validate Email (이메일)
     if (!formData.email) {
       newErrors.email = "이메일은 필수 입력입니다.";
@@ -184,7 +190,9 @@ export default function SignUpPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
-
+    console.log("rlfdl", Object.keys(validationErrors).length);
+    console.log("유효성에러", validationErrors);
+    console.log("오류", errorMessages);
     if (Object.keys(validationErrors).length > 0) {
       setErrorMessages(validationErrors);
     } else {
@@ -194,11 +202,12 @@ export default function SignUpPage() {
         userName: formData.userName,
         userRrn: formData.rrn1 + "-" + formData.rrn2,
         email: formData.email,
-        phone: formData.phone,
+        userPhone: formData.userPhone,
         userAdd: formData.add,
         userAdd2: formData.add2,
         admin:0
       };
+      console.log("유저데이터",userData)
       // JWT를 로컬 스토리지에서 가져오기
       const token = localStorage.getItem("jwt");
       try {
@@ -218,6 +227,7 @@ export default function SignUpPage() {
       }
     }
   };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="w-full bg-sky-100 py-2 border-y border-sky-200">
@@ -247,7 +257,7 @@ export default function SignUpPage() {
       <div className="flex flex-col lg:flex-row justify-center items-center py-12 sm:px-6 lg:px-8">
         <div className="lg:w-1/4 mb-8 lg:mb-0 lg:pr-8">
           <div className="bg-green-100 rounded-full p-8 max-w-md mx-auto relative">
-            <Link to="/main" className="h-24">
+            <Link to="/" className="h-24">
               <img
                 src="/images/mediGom_Logo.png"
                 alt="logo"
@@ -273,7 +283,7 @@ export default function SignUpPage() {
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 mb-6">
               회원가입
             </h2>
-            <form autoComplete="off" className="space-y-6" onSubmit={handleSubmit}>
+            <form autoComplete="off" className="space-y-6" >
               <div>
                 <label
                   htmlFor="id"
@@ -384,8 +394,8 @@ export default function SignUpPage() {
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     onChange={handleChange}
                   />
-                  {errorMessages.name && (
-                    <p className="text-red-600 text-sm">{errorMessages.name}</p>
+                  {errorMessages.userName && (
+                    <p className="text-red-600 text-sm">{errorMessages.userName}</p>
                   )}
                 </div>
               </div>
@@ -423,7 +433,7 @@ export default function SignUpPage() {
                     <input
                       id="rrn2"
                       name="rrn2"
-                      type="text"
+                      type="password"
                       placeholder="7자리"
                       required
                       maxLength="7" // 최대 길이 설정
@@ -439,26 +449,27 @@ export default function SignUpPage() {
 
               <div>
                 <label
-                  htmlFor="phone"
+                  htmlFor="userPhone"
                   className="block text-sm font-medium text-gray-700"
                 >
                   전화번호
                 </label>
                 <div className="mt-1">
                   <input
-                    id="phone"
-                    name="phone"
+                    id="userPhone"
+                    name="userPhone"
                     type="text"
                     placeholder="01012345678 형식으로 입력해주세요."
                     required
-                    maxLength="11" // 최대 길이 설정
+                    value={formData.userPhone}
                     autoComplete="new-password"
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     onChange={handleChange}
+                    autoComplete="new-password"
                   />
-                  {errorMessages.phone && (
+                  {errorMessages.userPhone && (
                     <p className="text-red-600 text-sm">
-                      {errorMessages.phone}
+                      {errorMessages.userPhone}
                     </p>
                   )}
                 </div>
@@ -539,7 +550,7 @@ export default function SignUpPage() {
 
               <div>
                 <button
-                  type="submit"
+                  type="button" onClick={handleSubmit}
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                 >
                   회원가입

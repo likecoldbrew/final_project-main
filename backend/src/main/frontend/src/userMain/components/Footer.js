@@ -25,7 +25,7 @@ const Footer = () => {
     <footer className=" bg-sky-100 text-sky-800 py-4">
       <div className="container mx-auto px-4 flex items-center justify-center">
         <Link
-          to="/" className="h-24">
+          to="/main" className="h-24">
         <img src="/images/mediGom_Logo.png" className="h-24 mr-4" alt="logo" />
 
         </Link>

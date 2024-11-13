@@ -315,7 +315,7 @@ export default function MyPage() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          doctorNo,
+          doctorNo:userInfo.userNo,
           educations,
           careers
         })
